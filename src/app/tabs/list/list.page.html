@@ -1,0 +1,30 @@
+<ion-header>
+  <ion-toolbar class="header-color">
+    <ion-buttons slot="primary">
+      <ion-button color="light" (click)="goAbout()">
+        <ion-icon name="information-circle-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title color="light" *ngIf="scanService.scansList.length == 0">
+      Liste des fiches visiteurs
+    </ion-title>
+    <ion-title color="light" *ngIf="scanService.scansList.length == 1">
+      1 fiche visiteur
+    </ion-title>
+    <ion-title color="light" *ngIf="scanService.scansList.length > 1">
+      {{ scanService.scansList.length }} fiches visiteurs
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content force-overscroll="false">
+  <ion-list>
+    <ion-item detail *ngFor="let scan of scanService.scansList; let id=index" (click)="openScan(id)">
+      <ion-label>
+        <h2>{{ scan.firstname }} {{ scan.lastname }}</h2>
+        <h3>{{ scan.company }}</h3>
+        <p>{{ scan.from.name }} ({{ scan.from.position }}) {{ scan.dateStr }}</p>
+      </ion-label>
+    </ion-item>
+  </ion-list>
+</ion-content>

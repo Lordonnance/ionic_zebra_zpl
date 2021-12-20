@@ -1,0 +1,36 @@
+<ion-content force-overscroll="false">
+  <img class="img_logo" src="assets/images/logo.png" (click)="showVersionNumber()" />
+
+  <form>
+    <ion-item>
+      <ion-label position="stacked">Votre nom</ion-label>
+      <ion-input type="text" name="exposantName" [(ngModel)]="exposantName"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label position="stacked">E-mail</ion-label>
+      <ion-input type="email" name="email" [(ngModel)]="email"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label position="stacked">Mot de passe</ion-label>
+      <ion-input type="password" name="password" [(ngModel)]="pwd"></ion-input>
+    </ion-item>
+<!-- Salon selection is now handled post connexion from the scans listing -->
+    <ion-item>
+      <ion-label position="stacked">Salon</ion-label>
+      <ion-select [(ngModel)]="salonId" name="Salon List">
+        <ion-select-option *ngFor="let item of this.globalService.salonList" [value]="item.salonId">{{item.city}} {{item.year}}</ion-select-option>
+      </ion-select>
+    </ion-item> 
+  </form>
+
+  <!-- 
+    Passwords willl be fixed at startup and not editable
+    <ion-button fill="clear" class="btn_forgot" (click)="goForgot()">Générer un nouveau mot de passe</ion-button>
+  -->
+</ion-content>
+
+<ion-footer class="ion-padding ion-no-border">
+  <ion-button expand="block" type="submit" class="btn_register" color="primary" (click)="login()">
+    SE CONNECTER
+  </ion-button>
+</ion-footer>

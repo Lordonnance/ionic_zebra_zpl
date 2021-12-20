@@ -1,0 +1,33 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button text="" defaultHref="tabs/list"></ion-back-button>
+    </ion-buttons>
+    <ion-title color="light">
+      Mes tags
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content force-overscroll="false">
+  <ion-button expand="block" color="light" class="btn_new" (click)="tagAdd()">
+    NOUVEAU TAG
+  </ion-button>
+  <ion-list>
+    <ion-item *ngFor="let tag of tags; let i = index">
+      <label class="container">
+        <input type="checkbox" checked="checked" [(ngModel)]="tag.checked">
+        <span class="checkmark"></span>
+      </label>
+      <ion-label>{{tag.title}}</ion-label>
+      <ion-icon name="create" item-right color="black" (click)="tagEdit(i)"></ion-icon>
+      <ion-icon name="trash" item-right color="black" (click)="tagDelete(i)"></ion-icon>
+    </ion-item>
+  </ion-list>
+
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed" (click)="saveTags()">
+    <ion-fab-button>
+      <ion-icon color="light" name="checkmark"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+</ion-content>

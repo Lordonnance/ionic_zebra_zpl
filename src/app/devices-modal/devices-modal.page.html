@@ -1,0 +1,31 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Licences enregistrées</ion-title>
+
+    <ion-buttons slot="end">
+      <ion-button (click)="close()">
+        <ion-icon name="md-close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content force-overscroll="false">
+  <div text-center class="ion-padding">
+    <h2>Toutes vos licences sont en cours d'utilisation.</h2>
+    <p>Afin de pouvoir enregistrer votre téléphone, vous pouvez soit augmenter votre volume de licences pour ce salon, soit supprimer un des comptes ci-dessous.</p>
+    <p>Chaque compte retiré de cette liste perdera ses scans conservés en local et sera déconnecté.</p>
+    <p>Voici les différents comptes enregistrés avec une licence en cours d'utilisation :</p>
+  </div>
+
+  <ion-list>
+    <ion-item *ngFor="let device of devices; let deviceIndex = index;">
+          <ion-label>
+            <h2>{{ device.name }}</h2>
+          </ion-label>
+          <button fill="clear" color="primary" slot="end" (click)="removeDevice(deviceIndex)">
+            SUPPRIMER
+          </button>
+    </ion-item>
+  </ion-list>
+</ion-content>

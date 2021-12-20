@@ -1,0 +1,75 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    
+    <ion-title>Conditions générales</ion-title>
+
+    <ion-buttons collapse="true" slot="end">
+      <ion-button (click)="globalService.logout()">
+        <ion-icon name="log-out"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content force-overscroll="false" [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-buttons slot="start">
+        <ion-back-button></ion-back-button>
+      </ion-buttons>
+
+      <ion-title size="large">Conditions générales</ion-title>
+  
+      <!-- <ion-buttons collapse="true" slot="end">
+        <ion-button (click)="logout()">
+          <ion-icon name="log-out"></ion-icon>
+        </ion-button>
+      </ion-buttons> -->
+    </ion-toolbar>
+  </ion-header>
+
+  <div class="ion-padding">
+    <p>
+      Version {{ globalService.versionNumber }}, mise en ligne le 1er Décembre 2021
+    </p>
+
+    <h1>CONDITIONS D’UTILISATION</h1>
+    <p>
+      Les présentes conditions générales ont pour objet de définir les modalités d’utilisation du logiciel Comexposium by MND (ci-après, le « LOGICIEL » et « IRCI »).
+      On considère comme UTILISATION le fait de télécharger, installer, copier ou utiliser le LOGICIEL.
+      Le contenu des conditions d’utilisation est applicable uniquement au logiciel développé par IRCI et non à des éléments des tiers qi pourraient être ajoutés.
+      L’UTILISATEUR est le particulier ou une entité commerciale qui télécharge le LOGICIEL. 
+    </p>
+    <h2>1- DROITS DE PROPRIETÉ</h2>
+    <p>
+      Tous les droits de propriété intellectuelle du LOGICIEL (incluant les images, vidéos, audios, textes et autres éléments qui font partie du LOGICIEL) ainsi que tout autre matériel protégé par les lois de la propriété intellectuelle, sauf si les présentes conditions d’utilisation en mentionnent le contraire, appartiennent exclusivement à IRCI.
+      En revanche, IRCI autorise la réalisation d’une copie du LOGICIEL en tant que copie de sécurité ou d’archive uniquement. 
+    </p>
+    <h2>2- EXCLUSION DES GARANTIES ET LIMITATION DE RESPONSABILITÉ</h2>
+    <p>
+      IRCI ne garantit pas l’utilité du LOGICIEL pour la réalisation d’une activité précise ni de son infaillibilité.<br /><br />
+      IRCI exclut toute responsabilité pour les dommages et préjudices de toute nature qui résultent de l’utilisation du LOGICIEL.<br /><br />
+      IRCI ne garantit pas la disponibilité et la continuité du fonctionnement du LOGICIEL.
+    </p>
+    <h2>3- PROTECTION DES DONNÉES PERSONELLES </h2>
+    <p>
+      Pour utiliser le LOGICIEL, il peut être nécessaire que l’UTILISATEUR fournisse préalablement à IRCI certaines données de caractère personnel (ci-après, les « DONNÉES PERSONNELLES »). Les DONNÉES PERSONNELLES sont traitées de manière automatique par IRCI selon les conditions définies ci-après.<br /><br />
+      IRCI a adopté les niveaux de sécurité de protection des DONNÉES PERSONNELLES légalement requis, et essaie d’installer d’autres moyens et mes techniques à sa portée pour éviter la perte, la mauvaise utilisation, l’altération, l’accès non autorisé et le vol de DONNÉES PERSONNELLES.<br /><br />
+      L’UTILISATEUR dispose des droits d’accès, d’annulation, de modification et d’opposition, ainsi que le droit d’être informé des cessions réalisées, l’UTILISATEUR ou son représentant légal, peuvent exercer ces droits auprès d’IRCI.
+    </p>
+    <h2>4- LÉGISLATION APPLICABLE</h2>
+    <p>
+      Le présent accord sera régi et interprété conformément au droit français. Toutes contestations relatives au présent accord seront de la compétence du Tribunal de Commerce de Marseille, auquel il est fait expressément attribution de compétence. 
+    </p>
+    <h2>5- STOCKAGE DES DONNÉES</h2>
+    <p>
+      Vos données sont conservées sur nos serveurs pour une durée d’un an maximum.<br /><br />
+      IRCI assure la confidentialité des données nécessaires à la conformité au GDPR et possède plusieurs certifications pour le respect d’exigences précises de sécurité et de confidentialité.<br /><br />
+      Afin de garantir la sécurité et l’intégrité de vos informations, l’échange de données entre votre mobile et nos serveurs se fait de manière sûre via un protocole sécurisé (SSL/TLS Grade A+, données ssllabs.com).<br /><br />
+      De plus, pour les informations que vous avez choisies de synchroniser avec nos serveurs, nous garantissons leur intégrité grâce à un stockage sécurisé, un accès surveillé et une sauvegarde régulière.<br /><br />
+    </p>
+  </div>
+</ion-content>

@@ -1,0 +1,26 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>Export des fiches</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content force-overscroll="false" [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Export des fiches</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <div class="ion-padding">
+    <h3 class="export_text">
+      Votre fichier de contact sera envoyé par e-mail et votre code exposant servira à
+      ouvrir le fichier.
+    </h3>
+  </div>
+</ion-content>
+
+<ion-footer class="ion-padding ion-no-border">
+    <ion-button expand="block" class="btn_register" color="primary" (click)="exportSelectedSalonScans()">
+    RECEVOIR LE FICHIER PAR E-MAIL
+  </ion-button>
+</ion-footer>

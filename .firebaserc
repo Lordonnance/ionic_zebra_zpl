@@ -1,0 +1,14 @@
+{
+  "targets": {
+    "mndirci": {
+      "hosting": {
+        "app": [
+          "mndirci"
+        ]
+      }
+    }
+  },
+  "projects": {
+    "default": "mndirci"
+  }
+}
