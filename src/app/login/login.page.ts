@@ -10,6 +10,7 @@ import { environment } from 'src/environments/environment';
 import { Subscription } from 'rxjs';
 import { BootService } from '../services/boot.service';
 import { DevicesModalPage } from '../devices-modal/devices-modal.page';
+import { ScanService } from '../services/scan.service';
 // import { DevicesModalPage } from '../devices-modal/devices-modal.page';
 
 @Component({
@@ -19,8 +20,8 @@ import { DevicesModalPage } from '../devices-modal/devices-modal.page';
 })
 export class LoginPage implements OnInit {
   loading: any;
-  email: string = "ctest@yopmail.com";
-  pwd: string = "comexposium";
+  email: string = "test@yopmail.com";
+  pwd: string = "PreventicaLille";
   exposantName: string = "Commercial 1";
   // email: string = "neox_angelo@hotmail.com";
   // pwd: string = "preventica";
@@ -36,6 +37,7 @@ export class LoginPage implements OnInit {
     private firestore: Firestore,
     public globalService: GlobalService,
     private bootService: BootService,
+    private scanService: ScanService,
     private alertCtrl: AlertController,
     private loadingCtrl: LoadingController,
     private modalCtrl: ModalController
@@ -160,7 +162,7 @@ export class LoginPage implements OnInit {
 
     // Comexposium : Get the exposant from client root directly != Preventica
     // const exposantRef = doc(this.firestore, "clients/" + environment.clientId + "/exposants/" + firebaseUser.uid)
-    const exposantRef: DocumentReference = doc(this.firestore, "clients/" + environment.clientId + "/salons" + this.salonId + "/exposants/" + firebaseUser.uid)
+    const exposantRef: DocumentReference = doc(this.firestore, "clients/" + environment.clientId + "/salons/" + this.salonId + "/exposants/" + firebaseUser.uid)
 
     try {
       const exposantSnapshot = await getDoc(exposantRef)
@@ -176,24 +178,27 @@ export class LoginPage implements OnInit {
         this.globalService.setCredentials({'email': this.email, 'pwd': this.pwd, 'exposantName': this.exposantName, 'exposantId': exposantSnapshot.id, 'salonId': this.salonId})
         
         // PREVENTICA - Check if devices array includes deviceUUID  
-        let deviceUUID: string = this.bootService.deviceUUID
         let isLicenceUsed: boolean = false
         
+        console.log ("this.bootService.deviceUUID", this.bootService.deviceUUID)
         exposantData.devices.forEach((device) => {
-          if (device.uuid == deviceUUID)
+          console.log ("device.uuid", device.uuid)
+          if (device.uuid == this.bootService.deviceUUID)
             isLicenceUsed = true
         })
-        console.log ("globalService.deviceName", this.exposantName)
-        console.log ("isLicenceUsed", isLicenceUsed)
+        // console.log ("globalService.deviceName", this.exposantName)
+        // console.log ("isLicenceUsed", isLicenceUsed)
+        // console.log ("exposantData.devices.length", exposantData.devices.length)
+        // console.log ("exposantData.licences", exposantData.licences)
 
-        if (isLicenceUsed || (!isLicenceUsed && exposantData.devices.length < exposantData.licencesTotal)) {
+        if (isLicenceUsed || (!isLicenceUsed && exposantData.devices.length < exposantData.licences)) {
           if (!isLicenceUsed) {
             // Add the deviceName to the devices array and update firestore
             // const exposantData = await this.
             console.log ("Adding the device string to the exposant devices array")
             console.log ("exposant.id", exposantSnapshot.id)
             let newDevice: any = {
-              uuid: deviceUUID,
+              uuid: this.bootService.deviceUUID,
               name: this.exposantName
             }
             exposantData.devices.push(newDevice)
@@ -210,7 +215,7 @@ export class LoginPage implements OnInit {
           // this.globalService.selectLatestOpenSalon()
 
           // Synchronize local scans with firestore scans
-          // this.globalService.syncData();
+          this.scanService.synchronizeScans();
 
           // Lead the user to the scans listing
           this.router.navigateByUrl('');
@@ -218,12 +223,14 @@ export class LoginPage implements OnInit {
           if (exposantData.licences <= 0) {
             this.showDlg("Désolé, vous n'avez aucune licence pour ce salon... Merci de joindre le XX XX XX XX XX")
           } else {
+            console.info("--- opening devices modal ---")
+            this.loading.dismiss()
             // Show modal with all registered devices to delete them
             const modal = await this.modalCtrl.create({
               component: DevicesModalPage,
               componentProps: {
                 'devices': exposantData.devices,
-                'exposantRef': exposantRef
+                'exposantRefPath': exposantRef.path
               }
             });
             return await modal.present();

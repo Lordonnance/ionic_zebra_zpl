@@ -1,0 +1,22 @@
+<div>
+  <button (click)="rate1()">
+    <ion-icon *ngIf="rate>0" name="star"></ion-icon>
+    <ion-icon *ngIf="rate<1" name="star-outline"></ion-icon>
+  </button>
+  <button (click)="rate2()">
+    <ion-icon *ngIf="rate>1" name="star"></ion-icon>
+    <ion-icon *ngIf="rate<2" name="star-outline"></ion-icon>
+  </button>
+  <button (click)="rate3()">
+    <ion-icon *ngIf="rate>2" name="star"></ion-icon>
+    <ion-icon *ngIf="rate<3" name="star-outline"></ion-icon>
+  </button>
+  <button (click)="rate4()">
+    <ion-icon *ngIf="rate>3" name="star"></ion-icon>
+    <ion-icon *ngIf="rate<4" name="star-outline"></ion-icon>
+  </button>
+  <button (click)="rate5()">
+    <ion-icon *ngIf="rate>4" name="star"></ion-icon>
+    <ion-icon *ngIf="rate<5" name="star-outline"></ion-icon>
+  </button>
+</div>

@@ -18,7 +18,7 @@
     <ion-item>
       <ion-label position="stacked">Salon</ion-label>
       <ion-select [(ngModel)]="salonId" name="Salon List">
-        <ion-select-option *ngFor="let item of this.globalService.salonList" [value]="item.salonId">{{item.city}} {{item.year}}</ion-select-option>
+        <ion-select-option *ngFor="let item of this.globalService.salonsList" [value]="item.salonId">{{item.city}} {{item.year}}</ion-select-option>
       </ion-select>
     </ion-item> 
   </form>

@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { Firestore, DocumentReference, updateDoc } from '@angular/fire/firestore';
+import { Firestore, DocumentReference, updateDoc, doc } from '@angular/fire/firestore';
 import { LoadingController, ModalController, NavParams } from '@ionic/angular';
 import { GlobalService } from '../services/global.service';
 
@@ -9,8 +9,8 @@ import { GlobalService } from '../services/global.service';
   styleUrls: ['./devices-modal.page.scss'],
 })
 export class DevicesModalPage implements OnInit {
-  @Input() devices: Array<string>
-  @Input() exposantRef: DocumentReference
+  @Input() devices: string[]
+  @Input() exposantRefPath: string
 
   constructor(
     private fireStore: Firestore,
@@ -23,7 +23,7 @@ export class DevicesModalPage implements OnInit {
     // this.exposantRef = this.navParam.get("exposantRef")
 
     console.log ("devices", this.devices)
-    console.log ("exposantRef path", this.exposantRef.path)
+    console.log ("exposantRef path", this.exposantRefPath)
   }
 
   async removeDevice(deviceIndex: number) {
@@ -40,7 +40,7 @@ export class DevicesModalPage implements OnInit {
     console.log ("devices", this.devices)
     
     // Update the exposant firestore document
-    updateDoc(this.exposantRef, {"devices": this.devices})
+    updateDoc(doc(this.fireStore, this.exposantRefPath), {"devices": this.devices})
 
     loading.dismiss()
 

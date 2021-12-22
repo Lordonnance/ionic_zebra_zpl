@@ -33,8 +33,7 @@ export class GlobalService {
     private alertCtrl: AlertController,
     private router: Router,
     private auth: Auth,
-    private firestore: Firestore,
-    private scanService: ScanService
+    private firestore: Firestore
   ) {}
 
   // Set logged in exposant data into local Storage  
@@ -135,9 +134,6 @@ export class GlobalService {
     this.salonsList = []
     this.selectedSalonId = ""
     this.tagsList = []
-    this.scanService.scansList = []
-    this.scanService.selectedScanData = null
-    this.scanService.selectedScanIndex = -1
 
     // 3 - Sign out from firebase authentication
     signOut(this.auth)

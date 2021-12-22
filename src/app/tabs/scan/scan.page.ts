@@ -58,6 +58,10 @@ export class ScanPage {
             role: 'cancel',
             handler: () => {
               console.log('Cancel clicked');
+
+              // Reset scanService attributes
+              this.scanService.resetScanAttributes()
+              
               // Logout the user
               this.globalService.logout()
             }

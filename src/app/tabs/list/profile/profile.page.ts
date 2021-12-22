@@ -107,7 +107,7 @@ export class ProfilePage implements OnInit, OnDestroy {
     try {
       // Set the new scan data to Firestore
       const scanRef = doc(this.firestore, "clients/" + environment.clientId + "/salons/" + this.globalService.userCredentials.salonId + "/exposants/" + this.globalService.userCredentials.exposantId + "/scans/" + this.scanService.selectedScanData["scanId"])
-      setDoc(scanRef, this.scanService.newlyScannedData)
+      setDoc(scanRef, this.scanService.selectedScanData)
     
       this.scanService.scansList[this.scanService.selectedScanIndex] = this.scanService.selectedScanData;
       this.scanService.setScansList();
@@ -117,20 +117,20 @@ export class ProfilePage implements OnInit, OnDestroy {
         clientId: environment.clientId,
         salonId: this.globalService.userCredentials.salonId,
         exposantId: this.globalService.userCredentials.exposantId,
-        scanId: this.scanService.newlyScannedData["scanId"],
+        scanId: this.scanService.selectedScanData["scanId"],
         moment: "ionViewWillEnter() in listing.page.ts",
         errorFull: JSON.stringify(error),
         errorMessage: error.message,
         errorCode: error.code,
         timestamp: new Date(),
-        scan: this.scanService.newlyScannedData
+        scan: this.scanService.selectedScanData
       }
 
       const scansErrorCollectionRef = collection(this.firestore, "scanErrors")
-      const scanErrorDocumentRef = doc(this.firestore, "scanErrors/" + this.globalService.userCredentials.exposantId + "_" + this.scanService.newlyScannedData.scanId)
-      if (typeof this.scanService.newlyScannedData !== 'undefined' && typeof typeof this.scanService.newlyScannedData.id !== 'undefined' && this.scanService.newlyScannedData.id.length > 0) {
+      const scanErrorDocumentRef = doc(this.firestore, "scanErrors/" + this.globalService.userCredentials.exposantId + "_" + this.scanService.selectedScanData.scanId)
+      if (typeof this.scanService.selectedScanData !== 'undefined' && typeof typeof this.scanService.selectedScanData.id !== 'undefined' && this.scanService.selectedScanData.id.length > 0) {
         setDoc(scanErrorDocumentRef, scanError)
-      } else if (typeof this.scanService.newlyScannedData !== 'undefined' && typeof typeof this.scanService.newlyScannedData.scanId !== 'undefined' && this.scanService.newlyScannedData.scanId.length > 0) {
+      } else if (typeof this.scanService.selectedScanData !== 'undefined' && typeof typeof this.scanService.selectedScanData.scanId !== 'undefined' && this.scanService.selectedScanData.scanId.length > 0) {
         setDoc(scanErrorDocumentRef, scanError)
       } else {
         addDoc(scansErrorCollectionRef, scanError)

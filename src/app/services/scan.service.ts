@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { addDoc, collection, doc, Firestore, setDoc } from '@angular/fire/firestore';
+import { addDoc, collection, doc, Firestore, onSnapshot, orderBy, query, setDoc, writeBatch } from '@angular/fire/firestore';
 import { environment } from 'src/environments/environment';
 import { BootService } from './boot.service';
 import { GlobalService } from './global.service';
@@ -28,6 +28,108 @@ export class ScanService {
   // Save scans into local Storage
   setScansList() {
     Storage.set({key: "COMEXPOSIUM_SCANSLIST", value: JSON.stringify(this.scansList)})
+  }
+
+  // Listen to scans change in firetore collection to get scan updates from other commercial users and also to fill in scans at startup
+  async synchronizeScans() {
+    console.log ("--- synchronizeScans ---")
+    const batch = writeBatch(this.firestore)
+
+    // Get realtime updates on the registered exposant session
+    /*
+    this.firestore
+    .collection("clients/" + environment.clientId + "/salons/" + this.currentSalonId + "/exposants")
+    .doc(this.currentExposantId)
+    .valueChanges()
+    .subscribe((exposant: any) => {
+      console.log("SYNC EXPOSANT")
+      console.log("exposant", exposant)
+      this.syncedExposant = exposant
+      this.tagsList = (typeof exposant.tags != 'undefined' && exposant.tags.length > 0) ? exposant.tags : []
+    })
+    */
+
+    // 1 - Init local scans array from Storage
+    const { value } = await Storage.get({key: 'COMEXPOSIUM_SCANSLIST'})
+    if (value !== null)
+      this.scansList = JSON.parse(value)
+
+    // 2 - Observe firestore scans collection this.firestore
+    const scansCollectionRef = collection(this.firestore, "clients/" + environment.clientId + "/salons/" + this.globalService.userCredentials.salonId + "/exposants/" + this.globalService.userCredentials.exposantId + "/scans")
+    onSnapshot(query(scansCollectionRef, orderBy('scanId', 'desc')), { includeMetadataChanges: true },
+    (firestoreScans) => {
+      const hasPendingWrites = firestoreScans.metadata.hasPendingWrites
+      const fromCache = firestoreScans.metadata.fromCache
+      console.log ("hasPendingWrites", hasPendingWrites)
+      console.log ("fromCache", fromCache)
+
+      // 2A - update local scans array with firestore scans
+      firestoreScans.forEach((firestoreScan) => {
+        const firestoreScanData: any = firestoreScan.data()
+        let isNotFoundLocally: boolean = false
+
+        // this.scansList.forEach((localScan: any) => {
+        for (let s=0; s<this.scansList.length; s++) {
+          if (firestoreScanData.scanId === this.scansList[s].scanId) {
+            isNotFoundLocally = true
+            break;
+          }
+        }
+
+        if (!isNotFoundLocally) {
+          console.log ("Scan ID is not found locally", firestoreScan.id)
+          this.scansList.push(firestoreScanData)
+        }
+      })
+
+      // 2B - Prepare batch writing to update Firestore scans collection with local unsychronized scans
+      for (let s=0; s<this.scansList.length; s++) {
+        let isScanSyncedWithFirestore: boolean = false
+
+        // firestoreScans.forEach((firestoreScan) => {
+        for (let f=0; f<firestoreScans.docs.length; f++) {
+          const firestoreScanData: any = firestoreScans.docs[f].data()
+          if (firestoreScanData.scanId === this.scansList[s].scanId) {
+            isScanSyncedWithFirestore = true
+            break;
+          }
+        }
+
+        if (!isScanSyncedWithFirestore) {
+          const scanDocumentRef = doc(this.firestore, "clients/" + environment.clientId + "/salons/" + this.globalService.userCredentials.salonId + "/exposants/" + this.globalService.userCredentials.exposantId + "/scans/" + this.scansList[s].scanId)
+          console.log ("Scan ID is not synced", this.scansList[s].scanId)
+          batch.set(scanDocumentRef, this.scansList[s]);
+        }
+      }
+
+      // batch.commit()
+
+      // 3 - Save updated scans into local Storage
+      this.setScansList()
+    },
+    (error) => console.error (error))
+
+    /*
+    // Get anonymous scans from localStorage
+    let guestScans: Array<any> = []
+    this.DataList.forEach(scan => {
+      // scan["scanId"] += "1"
+      if (scan.isGuestScan)
+        guestScans.push(scan)
+    })
+    console.log ("guestScans", guestScans)
+
+    // Synchronize the guest scans firestore
+    if (guestScans.length > 0) {
+      var batch = this.firestore.firestore.batch();
+      guestScans.forEach(guestScan => {
+        guestScan.isGuestScan = false
+        var scanRef = this.firestore.firestore.collection("clients/" + environment.clientId + "/salons/" + this.currentSalonId + "/exposants/" + this.currentExposantId + "/scans").doc(guestScan["scanId"])
+        batch.set(scanRef, guestScan);
+      })
+      batch.commit()
+    }
+    */
   }
 
   // Parse QR code scan with correct decoding algorithm
@@ -200,5 +302,19 @@ export class ScanService {
     this.selectedScanData = JSON.parse(JSON.stringify(this.scansList[scanIndex]));
     console.log ("this.scanService.selectedScanData", this.selectedScanData)
     this.router.navigateByUrl('tabs/list/profile')
+  }
+
+  // Reset scanService attributes
+  resetScanAttributes() {
+    console.info("--- resetScanAttributes ---")
+    
+    this.scansList = []
+    this.selectedScanData = null
+    this.selectedScanIndex = -1
+  }
+
+  // Zero padding  
+  pad(num: number) {
+    return num < 10 ? "0" + num : num;
   }
 }

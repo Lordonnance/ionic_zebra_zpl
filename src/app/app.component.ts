@@ -19,13 +19,31 @@ export class AppComponent {
     private bootService: BootService,
     private firestore: Firestore
   ) {
+    // Enable offline firestore persistence
+    this.enableFirestorePersistence()
+
+    // Capcitor apps require special AngularFire initialization code
+    /*
+    console.log ("Before initializeApp")
+    const app = initializeApp(environment.firebase);
+    if (Capacitor.isNativePlatform) {
+      console.log ("After initializeApp")
+      initializeAuth(app, {
+        persistence: indexedDBLocalPersistence
+      });
+    }
+    */
+
     // Start the navigation with the start and register screens
     this.router.navigateByUrl('start')
 
     // Initialize bootService
     this.bootService.init()
+  }
 
-    // Enable offline firestore persistence
+  enableFirestorePersistence() {
+    console.info ("--- enableFirestorePersistence ---")
+
     try {
       enableIndexedDbPersistence(this.firestore)
     } catch (error) {
@@ -42,14 +60,5 @@ export class AppComponent {
           // ...
       }
     }
-
-    // Capcitor apps require special AngularFire initialization code
-    const app = initializeApp(environment.firebase);
-    if (Capacitor.isNativePlatform) {
-      initializeAuth(app, {
-        persistence: indexedDBLocalPersistence
-      });
-    }
-
   }
 }

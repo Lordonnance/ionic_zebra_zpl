@@ -1,0 +1,14 @@
+ion-icon{
+    font-size: 40px;
+    color: var(--header-color);
+}
+button{
+    background: transparent;
+    outline: none;
+}
+@media (max-width: 320px) {
+    ion-icon{
+        font-size: 30px;
+        color: var(--header-color);
+    }
+}
