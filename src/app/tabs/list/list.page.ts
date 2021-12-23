@@ -28,6 +28,7 @@ export class ListPage {
   ngOnInit() {}
 
   // Open the selected scan into the profile page
+  /*
   openScan(id) {
     console.log ("--- openScan ---")
 
@@ -36,6 +37,7 @@ export class ListPage {
     console.log ("this.scanService.selectedScanData", this.scanService.selectedScanData)
     this.router.navigateByUrl('tabs/list/profile')
   }
+  */
 
   // Lead the user to the about page
   goAbout() {

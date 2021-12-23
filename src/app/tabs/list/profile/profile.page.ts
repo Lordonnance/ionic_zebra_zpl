@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { AlertController, NavController } from '@ionic/angular';
-import { EmailComposer } from '@awesome-cordova-plugins/email-composer/ngx';
+import { EmailComposer, OpenOptions } from 'capacitor-email-composer';
 import { CallNumber } from '@awesome-cordova-plugins/call-number/ngx';
 import { addDoc, collection, doc, Firestore, setDoc, updateDoc } from '@angular/fire/firestore';
 import { GlobalService } from 'src/app/services/global.service';
@@ -24,8 +24,7 @@ export class ProfilePage implements OnInit, OnDestroy {
     private firestore: Firestore, 
     private globalService: GlobalService, 
     public scanService: ScanService, 
-    public callNumber: CallNumber, 
-    public emailComposer: EmailComposer
+    public callNumber: CallNumber
   ) { }
 
   ngOnInit() {
@@ -54,20 +53,21 @@ export class ProfilePage implements OnInit, OnDestroy {
   async openEmail() {
     console.log ("--- openEmail ---")
     console.log ("this.scanService.selectedScanData", this.scanService.selectedScanData)
+    console.log ("Email to", this.scanService.selectedScanData["email"])
 
     try {
-      await this.emailComposer.isAvailable()
+      const hasEmailAccount = await EmailComposer.hasAccount()
+      console.log ("hasEmailAccount", hasEmailAccount)
 
-      const emailSettings = {
-        to: this.scanService.selectedScanData["email"],
-        cc: '',
+      const emailSettings: OpenOptions = {
+        to: [this.scanService.selectedScanData["email"]],
+        cc: [],
         bcc: [],
-        attachments: [],
         subject: '',
         body: '',
-        isHtml: true
+        isHtml: false
       };
-      this.emailComposer.open(emailSettings);
+      EmailComposer.open(emailSettings);
     } catch (error) {
       console.error ("Client email not found", error)
     }
@@ -109,8 +109,11 @@ export class ProfilePage implements OnInit, OnDestroy {
       const scanRef = doc(this.firestore, "clients/" + environment.clientId + "/salons/" + this.globalService.userCredentials.salonId + "/exposants/" + this.globalService.userCredentials.exposantId + "/scans/" + this.scanService.selectedScanData["scanId"])
       setDoc(scanRef, this.scanService.selectedScanData)
     
+      /*
+      // FIRESTORE PERSISENCE NO NEED TO KEEP A LOCAL COPY OF SCANS
       this.scanService.scansList[this.scanService.selectedScanIndex] = this.scanService.selectedScanData;
       this.scanService.setScansList();
+      */
       this.navCtrl.navigateBack('tabs/list');
     } catch (error) {      
       const scanError: any = {

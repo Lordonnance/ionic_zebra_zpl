@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Auth } from '@angular/fire/auth';
 import { Functions, httpsCallable, HttpsCallableResult } from '@angular/fire/functions';
 import { AlertController, LoadingController } from '@ionic/angular';
 import { GlobalService } from 'src/app/services/global.service';
@@ -16,7 +17,9 @@ export class ExportPage {
     private loadingCtrl: LoadingController,
     private alertCtrl: AlertController,
     public globalService: GlobalService,
-    private functions: Functions) 
+    private functions: Functions,
+    private auth: Auth
+  ) 
   {}
 
   // Export all the logged in exposant scans for the selected salon
@@ -25,11 +28,15 @@ export class ExportPage {
     this.loading = await this.loadingCtrl.create();
     this.loading.present();
 
-    const callable = httpsCallable(this.functions, 'exportAllExposantScansCall');
+    // COMEXPOSIUM : ALL Salons - const callable = httpsCallable(this.functions, 'exportAllExposantScansCall');
+    const callable = httpsCallable(this.functions, 'exportExposantCall');
+    console.log ("this.globalService.loggedInExposantData", this.globalService.loggedInExposantData)
+    console.log ("this.auth.currentUser.uid", this.auth.currentUser.uid)
     try {
       const results: HttpsCallableResult<any> = await callable({
         clientId: environment.clientId,
-        exposantId: this.globalService.loggedInExposantData.id
+        salonId: this.globalService.userCredentials.salonId,
+        exposantAuthUid: this.globalService.userCredentials.exposantId
       })
 
       console.log(JSON.stringify(results))

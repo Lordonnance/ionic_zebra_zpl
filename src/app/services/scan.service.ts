@@ -3,9 +3,10 @@ import { addDoc, collection, doc, Firestore, onSnapshot, orderBy, query, setDoc,
 import { environment } from 'src/environments/environment';
 import { BootService } from './boot.service';
 import { GlobalService } from './global.service';
-import { Storage } from '@capacitor/storage';
+// import { Storage } from '@capacitor/storage';
 import { AlertController } from '@ionic/angular';
 import { Router } from '@angular/router';
+// import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -14,8 +15,13 @@ export class ScanService {
   newlyScannedData: any = null
 
   scansList: any[] = []
+  // scansList$: Observable<any>
   selectedScanData: any = null
   selectedScanIndex: number = -1
+
+  // Firestore persistence indicators
+  hasPendingWrites: boolean = true
+  fromCache: boolean = true
 
   constructor(
     private alertCtrl: AlertController,
@@ -26,9 +32,12 @@ export class ScanService {
   ) { }
 
   // Save scans into local Storage
+  /*
+  FIRESTORE PERSISENCE NO NEED TO KEEP A LOCAL COPY OF SCANS
   setScansList() {
     Storage.set({key: "COMEXPOSIUM_SCANSLIST", value: JSON.stringify(this.scansList)})
   }
+  */
 
   // Listen to scans change in firetore collection to get scan updates from other commercial users and also to fill in scans at startup
   async synchronizeScans() {
@@ -50,19 +59,26 @@ export class ScanService {
     */
 
     // 1 - Init local scans array from Storage
-    const { value } = await Storage.get({key: 'COMEXPOSIUM_SCANSLIST'})
-    if (value !== null)
-      this.scansList = JSON.parse(value)
+    // const { value } = await Storage.get({key: 'COMEXPOSIUM_SCANSLIST'})
+    // if (value !== null)
+    //   this.scansList = JSON.parse(value)
 
     // 2 - Observe firestore scans collection this.firestore
     const scansCollectionRef = collection(this.firestore, "clients/" + environment.clientId + "/salons/" + this.globalService.userCredentials.salonId + "/exposants/" + this.globalService.userCredentials.exposantId + "/scans")
     onSnapshot(query(scansCollectionRef, orderBy('scanId', 'desc')), { includeMetadataChanges: true },
     (firestoreScans) => {
-      const hasPendingWrites = firestoreScans.metadata.hasPendingWrites
-      const fromCache = firestoreScans.metadata.fromCache
-      console.log ("hasPendingWrites", hasPendingWrites)
-      console.log ("fromCache", fromCache)
+      this.hasPendingWrites = firestoreScans.metadata.hasPendingWrites
+      this.fromCache = firestoreScans.metadata.fromCache
+      console.log ("hasPendingWrites", this.hasPendingWrites)
+      console.log ("fromCache", this.fromCache)
 
+      this.scansList = []
+      firestoreScans.forEach((firestoreScan) => {
+        this.scansList.push(firestoreScan.data())
+      })
+
+      /*
+      // FIRESTORE PERSISENCE NO NEED TO KEEP A LOCAL COPY OF SCANS
       // 2A - update local scans array with firestore scans
       firestoreScans.forEach((firestoreScan) => {
         const firestoreScanData: any = firestoreScan.data()
@@ -102,12 +118,15 @@ export class ScanService {
         }
       }
 
-      // batch.commit()
+      batch.commit()
 
       // 3 - Save updated scans into local Storage
       this.setScansList()
+      */
     },
-    (error) => console.error (error))
+    (error) => {
+      console.error (error)
+    })
 
     /*
     // Get anonymous scans from localStorage
@@ -238,7 +257,11 @@ export class ScanService {
       // Set the new scan data to Firestore
       const scanRef = doc(this.firestore, "clients/" + environment.clientId + "/salons/" + this.globalService.userCredentials.salonId + "/exposants/" + this.globalService.userCredentials.exposantId + "/scans/" + this.newlyScannedData["scanId"])
       setDoc(scanRef, this.newlyScannedData)
+      this.newlyScannedData = null;
+      this.openScan(0)
 
+      /*
+      FIRESTORE PERSISENCE NO NEED TO KEEP A LOCAL COPY OF SCANS
       // Set the new scan into local scansList array
       this.scansList.push(this.newlyScannedData);
       this.scansList = this.scansList.sort((a, b) => b.timestamp.seconds - a.timestamp.seconds)
@@ -252,6 +275,7 @@ export class ScanService {
 
       // Open the selected scan into the profile page
       this.openScan(index)
+      */
     } catch (error) {      
       const scanError: any = {
         clientId: environment.clientId,
@@ -304,7 +328,7 @@ export class ScanService {
     this.router.navigateByUrl('tabs/list/profile')
   }
 
-  // Reset scanService attributes
+  // Reset scanService attributes before logout
   resetScanAttributes() {
     console.info("--- resetScanAttributes ---")
     

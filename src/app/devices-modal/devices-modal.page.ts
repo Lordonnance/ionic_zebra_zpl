@@ -9,7 +9,7 @@ import { GlobalService } from '../services/global.service';
   styleUrls: ['./devices-modal.page.scss'],
 })
 export class DevicesModalPage implements OnInit {
-  @Input() devices: string[]
+  @Input() devices: any[]
   @Input() exposantRefPath: string
 
   constructor(

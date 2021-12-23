@@ -20,7 +20,6 @@ import { getApp } from 'firebase/app';
 import { registerLocaleData } from '@angular/common';
 import localeFr from '@angular/common/locales/fr';
 import { CallNumber } from '@awesome-cordova-plugins/call-number/ngx';
-import { EmailComposer } from '@awesome-cordova-plugins/email-composer/ngx';
 // the second parameter 'fr' is optional
 registerLocaleData(localeFr, 'fr');
 
@@ -41,7 +40,6 @@ registerLocaleData(localeFr, 'fr');
   ],
   providers: [
     CallNumber,
-    EmailComposer,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
     { provide: LANGUAGE_CODE, useValue: 'fr' },
     { provide: LOCALE_ID, useValue: 'fr' }

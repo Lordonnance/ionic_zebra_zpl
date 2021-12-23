@@ -72,6 +72,8 @@ export class LoginPage implements OnInit {
       this.email = userCredentials.email
       this.pwd = userCredentials.pwd
       this.exposantName = userCredentials.exposantName
+      
+      // TODO: Check if salonId is still open cause during automatic login it is not checked...
       this.salonId = userCredentials.salonId
 
       // The user is using valid credentials, stored in Storage
@@ -96,6 +98,10 @@ export class LoginPage implements OnInit {
 
         // ALREADY DONE - Save user credentials in local storage for future login
         // this.globalService.setCredentials({'email': this.email, 'pwd': this.pwd, 'exposantName': this.exposantName})
+
+        // Synchronize scans with firestore scans
+        // Display scans from cache if offline
+        this.scanService.synchronizeScans();
 
         setTimeout(() => {
           // Lead the user to the scans listing
@@ -130,6 +136,8 @@ export class LoginPage implements OnInit {
       this.showDlg("Merci de sélectionner un salon")
       return
     }
+
+    // TODO: Check if salonId is still open cause during automatic login it is not checked...
 
     this.loading = await this.loadingCtrl.create();
     await this.loading.present();

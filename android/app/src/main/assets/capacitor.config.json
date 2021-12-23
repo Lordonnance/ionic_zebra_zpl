@@ -1,0 +1,6 @@
+{
+	"appId": "com.mnd.irci.comexposium",
+	"appName": "comexposium",
+	"webDir": "www",
+	"bundledWebRuntime": false
+}
