@@ -13,6 +13,7 @@ import { Router } from '@angular/router';
 })
 export class ScanService {
   newlyScannedData: any = null
+  justScanned: boolean = false
 
   scansList: any[] = []
   // scansList$: Observable<any>
@@ -74,8 +75,18 @@ export class ScanService {
 
       this.scansList = []
       firestoreScans.forEach((firestoreScan) => {
-        this.scansList.push(firestoreScan.data())
+        console.log ("scanId", firestoreScan.id)
+        console.log ("scan fromCache", firestoreScan.metadata.fromCache)
+        let firestoreScanData: any = firestoreScan.data()
+        firestoreScanData.metadata = firestoreScan.metadata
+        console.log ("scan hasPendingWrites", firestoreScanData.metadata.hasPendingWrites)
+        this.scansList.push(firestoreScanData)
       })
+
+      if (this.justScanned) {
+        this.justScanned = false
+        this.openScan(0)
+      }     
 
       /*
       // FIRESTORE PERSISENCE NO NEED TO KEEP A LOCAL COPY OF SCANS
@@ -258,7 +269,10 @@ export class ScanService {
       const scanRef = doc(this.firestore, "clients/" + environment.clientId + "/salons/" + this.globalService.userCredentials.salonId + "/exposants/" + this.globalService.userCredentials.exposantId + "/scans/" + this.newlyScannedData["scanId"])
       setDoc(scanRef, this.newlyScannedData)
       this.newlyScannedData = null;
-      this.openScan(0)
+
+      // The scan will be open in the firestore onSnapshot listener on scans collection in scanService.synchronizeScans method
+      this.justScanned =true
+      // this.openScan(0)
 
       /*
       FIRESTORE PERSISENCE NO NEED TO KEEP A LOCAL COPY OF SCANS

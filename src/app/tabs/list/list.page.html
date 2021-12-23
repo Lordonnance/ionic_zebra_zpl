@@ -11,12 +11,18 @@
     </ion-title>
 
     <ion-buttons slot="primary">
+  
+      <ion-button (click)="goAbout()">
+        <ion-icon name="information-circle-outline"></ion-icon>
+      </ion-button>
+<!-- 
       <ion-button *ngIf="!scanService.hasPendingWrites && !scanService.fromCache" color="success">
         <ion-icon name="sync-circle-outline"></ion-icon>
       </ion-button>
       <ion-button *ngIf="scanService.hasPendingWrites || scanService.fromCache" color="warning">
         <ion-icon name="sync-circle-outline"></ion-icon>
       </ion-button>
+       -->
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
@@ -29,6 +35,11 @@
         <h3>{{ scan.company }}</h3>
         <p>{{ scan.from.name }} ({{ scan.from.position }}) {{ scan.timestamp.seconds * 1000 | date:'medium' }}</p>
       </ion-label>
+
+      <ion-note mode="ios" slot="end">
+        <span *ngIf="!scan.metadata.hasPendingWrites" class="dot success" name="sync-outline">&nbsp;</span>
+        <span *ngIf="scan.metadata.hasPendingWrites" class="dot warning" name="sync-outline">&nbsp;</span>
+      </ion-note>
     </ion-item>
   </ion-list>
 </ion-content>

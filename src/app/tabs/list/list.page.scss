@@ -1,0 +1,20 @@
+ion-content {
+    ion-list {
+        ion-item {
+            ion-note {
+                span.dot {
+                    display: block;
+                    width: 6px;
+                    height: 6px;
+                    border-radius: 50%;
+                }
+                span.success {
+                    background: #2dd36f;
+                }
+                span.warning {
+                    background: #ffc409;
+                }
+            }
+        }
+    }
+}
