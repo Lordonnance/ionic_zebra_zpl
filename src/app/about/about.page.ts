@@ -4,7 +4,7 @@ import { GlobalService } from '../services/global.service';
 import { ScanService } from '../services/scan.service';
 
 import { Deploy } from 'cordova-plugin-ionic/dist/ngx';
-import { AlertController } from '@ionic/angular';
+import { AlertController, LoadingController } from '@ionic/angular';
 import { BootService } from '../services/boot.service';
 
 @Component({
@@ -14,11 +14,11 @@ import { BootService } from '../services/boot.service';
 })
 export class AboutPage implements OnInit {
   isNewUpdateAvailable: boolean = false
-  percentDone: number = 0
+  updatePercentDone: number = 0
 
   constructor(
     private router: Router,
-    private alertCtrl: AlertController,
+    private loadingCtrl: LoadingController,
     private globalService: GlobalService,
     public bootService: BootService,
     private scanService: ScanService,
@@ -37,14 +37,14 @@ export class AboutPage implements OnInit {
   // Downlaod, extract the new currently available version from AppFlow and reload the app
   async performAutomaticUpdate() {
     console.info ("--- performAutomaticUpdate ---")
-    const alert = await this.alertCtrl.create({message: `Update is ${this.percentDone}% done...`})
-    await alert.present()
+    const loading = await this.loadingCtrl.create({})
+    await loading.present()
 
     try {
       const currentVersion = await this.deploy.getCurrentVersion();
       const resp = await this.deploy.sync({updateMethod: 'auto'}, percentDone => {
         console.log(`Update is ${percentDone}% done!`);
-        this.percentDone = percentDone
+        this.updatePercentDone = percentDone
       });
       if (!currentVersion || currentVersion.versionId !== resp.versionId){
         // We found an update, and are in process of redirecting you since you put auto!
@@ -55,7 +55,8 @@ export class AboutPage implements OnInit {
       // We encountered an error.
     }
 
-    alert.dismiss()
+    loading.dismiss()
+    this.updatePercentDone = 0
    }
 
   // Log out the user from the app and erase user Credentials in Ionic local storage

@@ -18,9 +18,11 @@
 </ion-header>
 
 <ion-content force-overscroll="false">
+  <ion-progress-bar *ngIf="updatePercentDone > 0" color="primary" [value]="updatePercentDone/100"></ion-progress-bar>
+  
   <div class="ion-padding">
     <p>
-      Version {{ bootService.applicationVersion }}, mise en ligne le 28 Décembre 2021
+      Version {{ bootService.applicationVersion }}, mise en ligne le 29 Décembre 2021
     </p>
 
     <h1>CONDITIONS D’UTILISATION</h1>
