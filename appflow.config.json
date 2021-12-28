@@ -3,7 +3,7 @@
     [
         {
             "appId": "84007da5",
-            "webBuildCommand": "ng run app:build:production"
+            "webBuildCommand": "npm run build:production"
         }
     ]
 }
