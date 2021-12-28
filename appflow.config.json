@@ -3,7 +3,7 @@
     [
         {
             "appId": "84007da5",
-            "webBuildCommand": "npm run build:production"
+            "webBuildCommand": "npm run build -- --configuration=production"
         }
     ]
 }
