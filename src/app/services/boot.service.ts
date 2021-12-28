@@ -34,6 +34,9 @@ export class BootService {
 
     // Check Internet connection and observe any change on the connection status
     this.initNetworkMonitoring()
+
+    // Get device platform and application version
+    this.initDeviceInfo()
   }
 
 

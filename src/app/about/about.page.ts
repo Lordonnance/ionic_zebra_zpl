@@ -34,6 +34,13 @@ export class AboutPage implements OnInit {
     this.isNewUpdateAvailable = newUpdateAvailable.available
   }
 
+  // All svg in the www folder from angular.json
+              // {
+              //   "glob": "**/*.svg",
+              //   "input": "node_modules/ionicons/dist/ionicons/svg",
+              //   "output": "./svg"
+              // }
+
   // Downlaod, extract the new currently available version from AppFlow and reload the app
   async performAutomaticUpdate() {
     console.info ("--- performAutomaticUpdate ---")
@@ -46,17 +53,35 @@ export class AboutPage implements OnInit {
         console.log(`Update is ${percentDone}% done!`);
         this.updatePercentDone = percentDone
       });
+
       if (!currentVersion || currentVersion.versionId !== resp.versionId){
         // We found an update, and are in process of redirecting you since you put auto!
       }else{
         // No update available
       }
+
+      /*
+      await this.deploy.downloadUpdate((progress) => {
+        console.log("downloadUpdate progress: ", progress);
+        this.updatePercentDone = progress
+      })
+      await this.deploy.extractUpdate((progress) => {
+        console.log("extractUpdate progress: ", progress);
+        this.updatePercentDone = progress
+      })
+      await this.deploy.reloadApp();
+      */
+
+      loading.dismiss()
+      this.updatePercentDone = 0
     } catch (err) {
       // We encountered an error.
-    }
+      console.error ("Error while downloading update")
+      console.error (err)
 
-    loading.dismiss()
-    this.updatePercentDone = 0
+      loading.dismiss()
+      this.updatePercentDone = 0
+    }
    }
 
   // Log out the user from the app and erase user Credentials in Ionic local storage
