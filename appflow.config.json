@@ -1,4 +1,9 @@
 {
-	"appId": "84007da5",
-	"webBuildCommand": "npm run app:build:production"
+    "apps":
+    [
+        {
+            "appId": "84007da5",
+            "webBuildCommand": "npm run app:build:production"
+        }
+    ]
 }
