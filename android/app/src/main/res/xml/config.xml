@@ -6,5 +6,9 @@
     <param name="android-package" value="mx.ferreyra.callnumber.CFCallNumber"/>
   </feature>
 
+  <feature name="IonicCordovaCommon">
+    <param name="android-package" value="com.ionicframework.common.IonicCordovaCommon" onload="true"/>
+  </feature>
+
   
 </widget>

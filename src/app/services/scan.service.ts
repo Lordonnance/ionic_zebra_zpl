@@ -70,16 +70,16 @@ export class ScanService {
     (firestoreScans) => {
       this.hasPendingWrites = firestoreScans.metadata.hasPendingWrites
       this.fromCache = firestoreScans.metadata.fromCache
-      console.log ("hasPendingWrites", this.hasPendingWrites)
-      console.log ("fromCache", this.fromCache)
+      // console.log ("hasPendingWrites", this.hasPendingWrites)
+      // console.log ("fromCache", this.fromCache)
 
       this.scansList = []
       firestoreScans.forEach((firestoreScan) => {
-        console.log ("scanId", firestoreScan.id)
-        console.log ("scan fromCache", firestoreScan.metadata.fromCache)
+        // console.log ("scanId", firestoreScan.id)
+        // console.log ("scan fromCache", firestoreScan.metadata.fromCache)
         let firestoreScanData: any = firestoreScan.data()
         firestoreScanData.metadata = firestoreScan.metadata
-        console.log ("scan hasPendingWrites", firestoreScanData.metadata.hasPendingWrites)
+        // console.log ("scan hasPendingWrites", firestoreScanData.metadata.hasPendingWrites)
         this.scansList.push(firestoreScanData)
       })
 

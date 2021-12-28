@@ -23,6 +23,8 @@ import { CallNumber } from '@awesome-cordova-plugins/call-number/ngx';
 // the second parameter 'fr' is optional
 registerLocaleData(localeFr, 'fr');
 
+import { Deploy } from 'cordova-plugin-ionic/dist/ngx';
+
 @NgModule({
   declarations: [AppComponent],
   entryComponents: [],
@@ -40,6 +42,7 @@ registerLocaleData(localeFr, 'fr');
   ],
   providers: [
     CallNumber,
+    Deploy,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
     { provide: LANGUAGE_CODE, useValue: 'fr' },
     { provide: LOCALE_ID, useValue: 'fr' }
