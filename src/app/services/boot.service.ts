@@ -10,7 +10,7 @@ import { GlobalService } from './global.service';
 })
 export class BootService {
   applicationVersion: string = "0.6.1"
-  liveDeployVersion: string = "0"
+  liveDeployVersion: string = "1"
 
   devicePlatform: string = "android"
   deviceUUID: string = ""

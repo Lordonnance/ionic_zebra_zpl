@@ -5,6 +5,7 @@ import { ScanService } from '../services/scan.service';
 
 import { Deploy } from 'cordova-plugin-ionic/dist/ngx';
 import { AlertController } from '@ionic/angular';
+import { BootService } from '../services/boot.service';
 
 @Component({
   selector: 'app-about',
@@ -18,7 +19,8 @@ export class AboutPage implements OnInit {
   constructor(
     private router: Router,
     private alertCtrl: AlertController,
-    public globalService: GlobalService,
+    private globalService: GlobalService,
+    public bootService: BootService,
     private scanService: ScanService,
     private deploy: Deploy
   ) {}
