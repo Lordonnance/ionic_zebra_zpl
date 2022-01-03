@@ -1,4 +1,4 @@
-<ion-header>
+<ion-header [translucent]="true">
   <ion-toolbar>
     <ion-title *ngIf="scanService.scansList.length == 0">
       Liste des fiches visiteurs
@@ -9,25 +9,24 @@
     <ion-title *ngIf="scanService.scansList.length > 1">
       {{ scanService.scansList.length }} fiches visiteurs
     </ion-title>
-
-    <ion-buttons slot="primary">
-  
-      <ion-button (click)="goAbout()">
-        <ion-icon name="information-circle-outline"></ion-icon>
-      </ion-button>
-<!-- 
-      <ion-button *ngIf="!scanService.hasPendingWrites && !scanService.fromCache" color="success">
-        <ion-icon name="sync-circle-outline"></ion-icon>
-      </ion-button>
-      <ion-button *ngIf="scanService.hasPendingWrites || scanService.fromCache" color="warning">
-        <ion-icon name="sync-circle-outline"></ion-icon>
-      </ion-button>
-       -->
-    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
-<ion-content force-overscroll="false">
+<ion-content force-overscroll="false" [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large" *ngIf="scanService.scansList.length == 0">
+        Liste des fiches visiteurs
+      </ion-title>
+      <ion-title size="large" *ngIf="scanService.scansList.length == 1">
+        1 fiche visiteur
+      </ion-title>
+      <ion-title size="large" *ngIf="scanService.scansList.length > 1">
+        {{ scanService.scansList.length }} fiches visiteurs
+      </ion-title>
+    </ion-toolbar>
+  </ion-header>
+
   <ion-list>
     <ion-item detail *ngFor="let scan of scanService.scansList; let scanIndex=index" (click)="scanService.openScan(scanIndex)">
       <ion-label>

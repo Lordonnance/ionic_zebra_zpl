@@ -118,8 +118,12 @@ export class GlobalService {
       tagNames.push(tag.title)
     })
 
+    // Update exposant tags in Firestore
     const exposantRef = doc(this.firestore, "clients/" + environment.clientId + "/salons/" + this.userCredentials.salonId + "/exposants/" + this.userCredentials.exposantId)
     updateDoc(exposantRef, {tags: tagNames})
+
+    // Update exposant tags in local array
+    this.tagsList = tagNames
   }
 
   // Log out the user from the app and erase user Credentials in Ionic local storage
@@ -131,7 +135,7 @@ export class GlobalService {
     // 2 - Reset any loggedIn properties
     this.loggedInExposantData = {}
     this.userCredentials = {} as UserCredentials
-    this.salonsList = []
+    // this.salonsList = []
     this.selectedSalonId = ""
     this.tagsList = []
 

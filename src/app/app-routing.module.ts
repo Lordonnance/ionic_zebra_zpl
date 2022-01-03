@@ -15,22 +15,10 @@ const routes: Routes = [
     loadChildren: () => import('./login/login.module').then( m => m.LoginPageModule)
   },
   {
-    path: 'about',
-    loadChildren: () => import('./about/about.module').then( m => m.AboutPageModule)
-  },
-  {
     path: 'devices-modal',
     loadChildren: () => import('./devices-modal/devices-modal.module').then( m => m.DevicesModalPageModule)
   }
 ];
-// {
-//   path: 'tags',
-//   loadChildren: () => import('./tabs/list/profile/tags/tags.module').then( m => m.TagsPageModule)
-// },
-// {
-//   path: 'profile',
-//   loadChildren: () => import('./tabs/list/profile/profile.module').then( m => m.ProfilePageModule)
-// },
 @NgModule({
   imports: [
     RouterModule.forRoot(routes, { preloadingStrategy: PreloadAllModules })

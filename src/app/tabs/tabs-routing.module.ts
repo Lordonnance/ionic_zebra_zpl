@@ -38,6 +38,19 @@ const routes: Routes = [
         loadChildren: () => import('./export/export.module').then(m => m.ExportPageModule)
       },
       {
+        path: 'settings',
+        children: [
+          {
+            path: '',
+            loadChildren: () => import('./settings/settings.module').then(m => m.SettingsPageModule)
+          },
+          {
+            path: 'terms',
+            loadChildren: () => import('./settings/terms/terms.module').then(m => m.TermsPageModule)
+          }
+        ]
+      },
+      {
         path: '',
         redirectTo: '/tabs/list',
         pathMatch: 'full'
@@ -48,6 +61,10 @@ const routes: Routes = [
     path: '',
     redirectTo: '/tabs/list',
     pathMatch: 'full'
+  },
+  {
+    path: 'settings',
+    loadChildren: () => import('./settings/settings.module').then( m => m.SettingsPageModule)
   }
 ];
 

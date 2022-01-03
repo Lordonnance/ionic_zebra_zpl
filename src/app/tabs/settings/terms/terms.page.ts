@@ -1,18 +1,18 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { GlobalService } from '../services/global.service';
-import { ScanService } from '../services/scan.service';
+import { GlobalService } from '../../../services/global.service';
+import { ScanService } from '../../../services/scan.service';
 
 import { Deploy } from 'cordova-plugin-ionic/dist/ngx';
 import { AlertController, LoadingController } from '@ionic/angular';
-import { BootService } from '../services/boot.service';
+import { BootService } from '../../../services/boot.service';
 
 @Component({
-  selector: 'app-about',
-  templateUrl: './about.page.html',
-  styleUrls: ['./about.page.scss'],
+  selector: 'app-terms',
+  templateUrl: './terms.page.html',
+  styleUrls: ['./terms.page.scss'],
 })
-export class AboutPage implements OnInit {
+export class TermsPage implements OnInit {
   isNewUpdateAvailable: boolean = false
   updatePercentDone: number = 0
 
@@ -21,25 +21,18 @@ export class AboutPage implements OnInit {
     private loadingCtrl: LoadingController,
     private globalService: GlobalService,
     public bootService: BootService,
-    private scanService: ScanService,
+    public scanService: ScanService,
     private deploy: Deploy
   ) {}
 
   async ngOnInit() {
-    console.info ("--- about ngOnInit ---")
+    console.info ("--- terms ngOnInit ---")
     
     const newUpdateAvailable = await this.deploy.checkForUpdate()
     console.log ("newUpdateAvailable", newUpdateAvailable)
 
     this.isNewUpdateAvailable = newUpdateAvailable.available
   }
-
-  // All svg in the www folder from angular.json
-              // {
-              //   "glob": "**/*.svg",
-              //   "input": "node_modules/ionicons/dist/ionicons/svg",
-              //   "output": "./svg"
-              // }
 
   // Downlaod, extract the new currently available version from AppFlow and reload the app
   async performAutomaticUpdate() {
@@ -82,7 +75,7 @@ export class AboutPage implements OnInit {
       loading.dismiss()
       this.updatePercentDone = 0
     }
-   }
+  }
 
   // Log out the user from the app and erase user Credentials in Ionic local storage
   logout() {

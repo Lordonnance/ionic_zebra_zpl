@@ -39,11 +39,6 @@ export class ListPage {
   }
   */
 
-  // Lead the user to the about page
-  goAbout() {
-    this.router.navigateByUrl('about');
-  }
-
   // Alert the user of a specific message
   async showAlert(msg) {
     const alert = await this.alertCtrl.create({

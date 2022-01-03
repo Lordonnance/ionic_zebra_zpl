@@ -1,5 +1,4 @@
 import { IonicModule } from '@ionic/angular';
-import { RouterModule } from '@angular/router';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -12,7 +11,6 @@ import { ExportPageRoutingModule } from './export-routing.module';
     IonicModule,
     CommonModule,
     FormsModule,
-    RouterModule.forChild([{ path: '', component: ExportPage }]),
     ExportPageRoutingModule,
   ],
   declarations: [ExportPage]

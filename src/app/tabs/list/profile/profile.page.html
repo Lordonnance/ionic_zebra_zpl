@@ -1,20 +1,26 @@
-<ion-header>
+<ion-header [translucent]="true">
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-back-button text="" defaultHref="tabs/list"></ion-back-button>
+      <ion-back-button text="Retour" defaultHref="tabs/list"></ion-back-button>
     </ion-buttons>
+
     <ion-title>
-      Fiche visiteur
+      {{ scanService.selectedScanData.company }}
     </ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content force-overscroll="false">
+<ion-content force-overscroll="false" [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">{{ scanService.selectedScanData.company }}</ion-title>
+    </ion-toolbar>
+  </ion-header>
 
   <ion-list>
     <ion-item>
       <ion-label>
-        <p class="visitor_company">{{ scanService.selectedScanData.company }}</p>
+        <!-- <p class="visitor_company">{{ scanService.selectedScanData.company }}</p> -->
         <p class="visitor_name">{{ scanService.selectedScanData.firstname }} {{ scanService.selectedScanData.lastname }}</p>
         <p class="visitor_time">{{ date }}</p>
       </ion-label>

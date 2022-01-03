@@ -137,6 +137,8 @@ export class TagsPage implements OnInit {
 
   // Set all selected tags to firestore scan document
   saveTags() {
+    console.info ("--- saveTags ---")
+
     this.scanService.selectedScanData["tags"] = []
     for (var i = 0; i < this.tags.length; i++) {
       if (this.tags[i]["checked"])
@@ -144,17 +146,17 @@ export class TagsPage implements OnInit {
     }
 
     // Update scan firestore document
-    const scanRef = doc(this.firestore, "clients/" + environment.clientId + "/salons/" + this.globalService.userCredentials.salonId + "/exposants/" + this.globalService.userCredentials.exposantId + "/scans/" + this.scanService.selectedScanData["scanId"])
-    updateDoc(scanRef, {tags: this.scanService.selectedScanData["tags"]})
+    // const scanRef = doc(this.firestore, "clients/" + environment.clientId + "/salons/" + this.globalService.userCredentials.salonId + "/exposants/" + this.globalService.userCredentials.exposantId + "/scans/" + this.scanService.selectedScanData["scanId"])
+    // updateDoc(scanRef, {tags: this.scanService.selectedScanData["tags"]})
 
-    /*
+    
     // Update local scans array and set in Storage
     // FIRESTORE PERSISENCE NO NEED TO KEEP A LOCAL COPY OF SCANS
-    this.scanService.scansList[this.scanService.selectedScanIndex] = this.scanService.selectedScanData;
-    this.scanService.setScansList();
-    */
+    this.scanService.scansList[this.scanService.selectedScanIndex].tags = this.scanService.selectedScanData.tags;
+    // this.scanService.setScansList();
+    
 
     // Go back Profile page
-    this.router.navigateByUrl('tabs/list/profile');
+    // this.router.navigateByUrl('tabs/list/profile');
   }
 }

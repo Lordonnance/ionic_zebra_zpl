@@ -1,28 +1,23 @@
-<ion-header>
+<ion-header [translucent]="true">
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-back-button></ion-back-button>
+      <ion-back-button text="Retour" defaultHref="tabs/settings"></ion-back-button>
     </ion-buttons>
     
     <ion-title>Conditions générales</ion-title>
-
-    <ion-buttons collapse="true" slot="end">
-      <ion-button *ngIf="isNewUpdateAvailable" (click)="performAutomaticUpdate()">
-        <ion-icon name="download-outline"></ion-icon>
-      </ion-button>
-      <ion-button (click)="logout()">
-        <ion-icon name="log-out-outline"></ion-icon>
-      </ion-button>
-    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
-<ion-content force-overscroll="false">
-  <ion-progress-bar *ngIf="updatePercentDone > 0" color="primary" [value]="updatePercentDone/100"></ion-progress-bar>
+<ion-content force-overscroll="false" [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Conditions générales</ion-title>
+    </ion-toolbar>
+  </ion-header>
   
   <div class="ion-padding">
     <p>
-      Version {{ bootService.applicationVersion }}, mise en ligne le 30 Décembre 2021
+      Version {{ bootService.applicationVersion }}, mise en ligne le 3 Janvier 2022
     </p>
 
     <h1>CONDITIONS D’UTILISATION</h1>

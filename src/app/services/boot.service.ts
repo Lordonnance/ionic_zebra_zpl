@@ -4,6 +4,7 @@ import { App, AppInfo } from '@capacitor/app';
 import { ConnectionStatus, Network } from '@capacitor/network';
 import { Observable, Subject } from 'rxjs';
 import { GlobalService } from './global.service';
+import { Deploy } from 'cordova-plugin-ionic/dist/ngx';
 
 @Injectable({
   providedIn: 'root'
@@ -19,8 +20,11 @@ export class BootService {
   networkSubject: Subject<ConnectionStatus> = new Subject()
   networkStatus$: Observable<ConnectionStatus> = this.networkSubject.asObservable()
 
+  isNewUpdateAvailable: boolean = false
+
   constructor(
-    private globalService: GlobalService
+    private globalService: GlobalService,
+    private deploy: Deploy
   ) {
 
   }
@@ -37,6 +41,9 @@ export class BootService {
 
     // Get device platform and application version
     this.initDeviceInfo()
+
+    // Check for appDeploy updates
+    this.initDeployUpdates()
   }
 
 
@@ -75,5 +82,14 @@ export class BootService {
     // Get device unique identifier
     const deviceId: DeviceId = await Device.getId()
     this.deviceUUID = deviceId.uuid
+  }
+   
+  // Check for appDeploy updates
+  async initDeployUpdates() {
+    console.info ("--- initDeployUpdates ---")
+
+    const newUpdateAvailable = await this.deploy.checkForUpdate()
+    console.log ("newUpdateAvailable", newUpdateAvailable)
+    this.isNewUpdateAvailable = newUpdateAvailable.available
   }
 }
