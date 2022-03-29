@@ -2,7 +2,7 @@
     "apps":
     [
         {
-            "appId": "",
+            "appId": "24cfc76d",
             "webBuildCommand": "npm run build -- --configuration=production"
         }
     ]
