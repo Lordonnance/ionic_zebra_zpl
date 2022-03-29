@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
-	<string>comexposium</string>
+	<string>Preventica</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -23,7 +23,7 @@
 	<key>IonApi</key>
 	<string>https://api.ionicjs.com</string>
 	<key>IonAppId</key>
-	<string>84007da5</string>
+	<string>24cfc76d</string>
 	<key>IonChannelName</key>
 	<string>Production</string>
 	<key>IonMaxVersions</key>
