@@ -5,7 +5,7 @@ import { AlertController, LoadingController, ModalController } from '@ionic/angu
 import { Auth, signInWithEmailAndPassword, User, UserCredential } from '@angular/fire/auth';
 import { Firestore, getDocs, collection, doc, getDoc, updateDoc, DocumentReference } from '@angular/fire/firestore';
 
-import { GlobalService, UserCredentials } from 'src/app/services/global.service';
+import { GlobalService, Salon, UserCredentials } from 'src/app/services/global.service';
 import { environment } from 'src/environments/environment';
 import { Subscription } from 'rxjs';
 import { BootService } from '../services/boot.service';
@@ -25,7 +25,8 @@ export class LoginPage implements OnInit {
   exposantName: string = "Commercial 1";
   // email: string = "neox_angelo@hotmail.com";
   // pwd: string = "preventica";
-  salonId: string = "";
+  // salonId: string = "";
+  salon: Salon = {} as Salon
   // exposantid: string = "";
 
   // subscribeExposant: Subscription
@@ -74,7 +75,10 @@ export class LoginPage implements OnInit {
       this.exposantName = userCredentials.exposantName
       
       // TODO: Check if salonId is still open cause during automatic login it is not checked...
-      this.salonId = userCredentials.salonId
+      // this.salonId = userCredentials.salonId
+      
+      // TODO: Check if salonId is still open cause during automatic login it is not checked...
+      this.salon = userCredentials.salon
 
       // The user is using valid credentials, stored in Storage
       // Proceed to home directly if Network connection if disabled
@@ -91,7 +95,7 @@ export class LoginPage implements OnInit {
         // Set logged in expoant data into local Storage AND in globalService attribute
         this.globalService.setLoggedInExposantData(JSON.parse(loggedInExposantData)) 
         // Set user credentials into local Storage AND in globalService attribute
-        this.globalService.setCredentials({'email': this.email, 'pwd': this.pwd, 'exposantName': this.exposantName, 'exposantId': userCredentials.exposantId, 'salonId': this.salonId})
+        this.globalService.setCredentials({'email': this.email, 'pwd': this.pwd, 'exposantName': this.exposantName, 'exposantId': userCredentials.exposantId, 'salon': this.salon})
 
         // Select the latest open salon
         // this.globalService.selectLatestOpenSalon()
@@ -119,6 +123,8 @@ export class LoginPage implements OnInit {
     let isSalonCorrect: boolean = false
     let firebaseUser: User = {} as User
 
+    console.log ("Salon selected", this.salon)
+
     // Register form fields validation
     if (this.exposantName.length <= 0) {
       this.showDlg("Merci de rentrer votre nom qui sera associé à chacun de vos scans")
@@ -129,10 +135,10 @@ export class LoginPage implements OnInit {
     } else if (this.pwd.length < 5) {
       this.showDlg("Le mot de passe doit faire au moins 5 caractères")
       return
-    } else if (this.salonId == "" && this.globalService.salonsList.length === 0) {
+    } else if (this.salon.id == "" && this.globalService.salonsList.length === 0) {
       this.showDlg("Aucun salon disponible actuellement")
       return
-    } else if (this.salonId == "") {
+    } else if (this.salon.id == "") {
       this.showDlg("Merci de sélectionner un salon")
       return
     }
@@ -168,9 +174,7 @@ export class LoginPage implements OnInit {
 
     console.info ("Just after calling firebase auth method and before firestore")
 
-    // Comexposium : Get the exposant from client root directly != Preventica
-    // const exposantRef = doc(this.firestore, "clients/" + environment.clientId + "/exposants/" + firebaseUser.uid)
-    const exposantRef: DocumentReference = doc(this.firestore, "clients/" + environment.clientId + "/salons/" + this.salonId + "/exposants/" + firebaseUser.uid)
+    const exposantRef: DocumentReference = doc(this.firestore, "clients/" + environment.clientId + "/salons/" + this.salon.id + "/exposants/" + firebaseUser.uid)
 
     try {
       const exposantSnapshot = await getDoc(exposantRef)
@@ -183,7 +187,7 @@ export class LoginPage implements OnInit {
         isSalonCorrect = true;
 
         // Save user credentials in local storage for future login
-        this.globalService.setCredentials({'email': this.email, 'pwd': this.pwd, 'exposantName': this.exposantName, 'exposantId': exposantSnapshot.id, 'salonId': this.salonId})
+        this.globalService.setCredentials({'email': this.email, 'pwd': this.pwd, 'exposantName': this.exposantName, 'exposantId': exposantSnapshot.id, 'salon': this.salon})
         
         // PREVENTICA - Check if devices array includes deviceUUID  
         let isLicenceUsed: boolean = false
@@ -213,14 +217,8 @@ export class LoginPage implements OnInit {
             updateDoc(exposantRef, {"devices": exposantData.devices})
           }
 
-          // Comexposium : NO DEVICES CHECK AND Check if the logged in exposant is at least registered to one salon
-          // if (typeof exposantData.salonIds !== 'undefined' && exposantData.salonIds.length > 0) {}
-
           // Set logged in expoant data into local Storage
-          this.globalService.setLoggedInExposantData(exposantData) 
-
-          // COMEXPOSIUM - Select the latest open salon
-          // this.globalService.selectLatestOpenSalon()
+          this.globalService.setLoggedInExposantData(exposantData)
 
           // Synchronize local scans with firestore scans
           this.scanService.synchronizeScans();
@@ -295,7 +293,7 @@ export class LoginPage implements OnInit {
 
     const alert = await this.alertCtrl.create({
       header: "IRCI Preventica",
-      message: "Version " + this.globalService.versionNumber,
+      message: "Version " + this.bootService.applicationVersion,
       buttons: [
         {
           text: 'Ok',

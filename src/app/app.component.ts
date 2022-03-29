@@ -7,6 +7,7 @@ import { environment } from 'src/environments/environment';
 import { BootService } from './services/boot.service';
 
 import { Firestore, FirestoreSettings, enableIndexedDbPersistence, PersistenceSettings, initializeFirestore } from '@angular/fire/firestore';
+import { Platform } from '@ionic/angular';
 
 @Component({
   selector: 'app-root',
@@ -17,25 +18,26 @@ export class AppComponent {
   constructor(
     private router: Router,
     private bootService: BootService,
-    private firestore: Firestore
+    private firestore: Firestore,
+    private platform: Platform
   ) {
     // Enable offline firestore persistence
     this.enableFirestorePersistence()
 
-    // Capcitor apps require special AngularFire initialization code
-    /*
-    console.log ("Before initializeApp")
-    const app = initializeApp(environment.firebase);
-    if (Capacitor.isNativePlatform) {
-      console.log ("After initializeApp")
-      initializeAuth(app, {
-        persistence: indexedDBLocalPersistence
-      });
-    }
-    */
-
     // Start the navigation with the start and register screens
     this.router.navigateByUrl('start')
+
+    this.platform.backButton.subscribeWithPriority(10, (processNextHandler) => {
+      console.log('Back button was called from component level !');
+      console.log('this.router.url', this.router.url);
+
+      if (
+        this.router.url === "/tabs/list/profile" ||
+        this.router.url === "/tabs/list/profile/tags" ||
+        this.router.url === "/tabs/settings/terms"
+      )
+        processNextHandler()
+    });
 
     // Initialize bootService
     this.bootService.init()

@@ -13,6 +13,6 @@ export class TabsPage {
   // Enhance UX presenting barcode scanning to user (lowest preparation time)
   prepareScan() {
     console.info("--- prepareScan ---")
-    BarcodeScanner.prepare()
+    // BarcodeScanner.prepare()
   }
 }

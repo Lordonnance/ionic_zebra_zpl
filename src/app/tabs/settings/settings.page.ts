@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { LoadingController } from '@ionic/angular';
+import { AlertController, LoadingController } from '@ionic/angular';
 import { Deploy } from 'cordova-plugin-ionic/dist/ngx';
 import { BootService } from 'src/app/services/boot.service';
 import { GlobalService } from 'src/app/services/global.service';
@@ -19,10 +19,13 @@ export class SettingsPage implements OnInit {
     private router: Router,
     public scanService: ScanService,
     public bootService: BootService,
-    private globalService: GlobalService,
+    public globalService: GlobalService,
     private deploy: Deploy,
-    private loadingCtrl: LoadingController
-  ) { }
+    private loadingCtrl: LoadingController,
+    private alertController: AlertController
+  ) {
+    this.globalService.getAllSalons()
+  }
 
   ngOnInit() {
   }
@@ -33,33 +36,97 @@ export class SettingsPage implements OnInit {
     this.router.navigateByUrl('tabs/settings/terms');
   }
 
-  // Log out the user from the app and erase user Credentials in Ionic local storage
-  logout() {
-    // Reset scanService attributes
-    this.scanService.resetScanAttributes()
+  openIntro() {
+    console.info ("--- openIntro ---")
+    this.router.navigateByUrl('intro');
+  }
 
-    // Logout from firebase and go to login page
-    this.globalService.logout()
+  // Log out the user from the app and erase user Credentials in Ionic local storage
+  async logout() {
+    console.info ("--- logout ---")
+
+    const alert = await this.alertController.create({
+      header: 'Déconnexion',
+      message: 'Souhaitez-vous déconnecter votre compte exposant de l\'application ?',
+      buttons: [
+        {
+          text: 'Annuler',
+          role: 'cancel',
+          cssClass: 'secondary',
+          id: 'cancel-button',
+          handler: (blah) => {
+            console.log('Confirm Cancel');
+          }
+        }, {
+          text: 'Oui',
+          id: 'confirm-button',
+          handler: () => {
+            console.log('Confirm Okay');
+    
+            // Reset scanService attributes
+            this.scanService.resetScanAttributes()
+        
+            // Logout from firebase and go to login page
+            this.globalService.logout()
+          }
+        }
+      ]
+    });
+
+    await alert.present();
+  }
+
+  // Edit the commercial name used in all exports
+  async editExposantName() {
+    console.info ("--- editExposantName ---")
+
+    const alert = await this.alertController.create({
+      header: 'Nom utilisateur',
+      inputs: [
+        {
+          name: 'exposantName',
+          type: 'text',
+          placeholder: 'Nom utilisateur',
+          value: this.globalService.userCredentials.exposantName
+        }
+      ],
+      buttons: [
+        {
+          text: 'Annuler',
+          role: 'cancel',
+          cssClass: 'secondary',
+          handler: () => {
+            console.log('Confirm Cancel');
+          }
+        }, {
+          text: 'Enregistrer',
+          handler: (alertData) => {
+            console.log('Confirm Ok');
+            console.log("exposantName", alertData.exposantName);
+            this.globalService.userCredentials.exposantName = alertData.exposantName
+            this.globalService.setCredentials(this.globalService.userCredentials)
+          }
+        }
+      ]
+    })
+
+    alert.present()
   }
 
   // Downlaod, extract the new currently available version from AppFlow and reload the app
   async performAutomaticUpdate() {
     console.info ("--- performAutomaticUpdate ---")
-    const loading = await this.loadingCtrl.create({})
+    const loading = await this.loadingCtrl.create({message: "Téléchargement de la mise à jour"})
     await loading.present()
 
     try {
+      this.globalService.setUpdateReady("true")
+
       const currentVersion = await this.deploy.getCurrentVersion();
       const resp = await this.deploy.sync({updateMethod: 'auto'}, percentDone => {
         console.log(`Update is ${percentDone}% done!`);
         this.updatePercentDone = percentDone
       });
-
-      if (!currentVersion || currentVersion.versionId !== resp.versionId){
-        // We found an update, and are in process of redirecting you since you put auto!
-      }else{
-        // No update available
-      }
 
       /*
       await this.deploy.downloadUpdate((progress) => {
@@ -72,7 +139,7 @@ export class SettingsPage implements OnInit {
       })
       await this.deploy.reloadApp();
       */
-
+      
       loading.dismiss()
       this.updatePercentDone = 0
     } catch (err) {

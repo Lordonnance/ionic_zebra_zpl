@@ -10,11 +10,20 @@ import { environment } from 'src/environments/environment';
 import { ScanService } from './scan.service';
 
 export interface UserCredentials {
-    salonId: string;
+    salon: Salon;
     exposantId: string;
     exposantName: string;
     pwd: string;
     email: string;
+}
+
+export interface Salon {
+    id: string;
+    code: string;
+    city: string;
+    year: string;
+    dateStart: Date;
+    dateEnd: Date;
 }
 
 @Injectable({
@@ -39,7 +48,7 @@ export class GlobalService {
   // Set logged in exposant data into local Storage  
   setLoggedInExposantData(exposantData) {
     this.loggedInExposantData = exposantData
-    Storage.set({key: "COMEXPOSIUM_LOGGEDINEXPOSANTDATA", value: JSON.stringify(exposantData)})
+    Storage.set({key: "PREVENTICA_LOGGEDINEXPOSANTDATA", value: JSON.stringify(exposantData)})
 
     // Retreive exposant tags
     this.tagsList = (typeof exposantData.tags !== 'undefined' && exposantData.tags.length > 0) ? exposantData.tags : []
@@ -47,30 +56,43 @@ export class GlobalService {
 
   // Get logged in exposant data from local Storage  
   async getLoggedInExposantData() {
-    const { value } = await Storage.get({key: 'COMEXPOSIUM_LOGGEDINEXPOSANTDATA'})
+    const { value } = await Storage.get({key: 'PREVENTICA_LOGGEDINEXPOSANTDATA'})
     return value
   }
 
   // Remove logged in exposant data from local Storage  
   async removeLoggedInExposantData() {
-    await Storage.remove({key: 'COMEXPOSIUM_LOGGEDINEXPOSANTDATA'})
+    await Storage.remove({key: 'PREVENTICA_LOGGEDINEXPOSANTDATA'})
   }
   
   // Save user credentials in local storage for future login 
   setCredentials(userCredentials: UserCredentials) {
     this.userCredentials = userCredentials
-    Storage.set({key: "COMEXPOSIUM_USERCREDENTIALS", value: JSON.stringify(userCredentials)})
+    Storage.set({key: "PREVENTICA_USERCREDENTIALS", value: JSON.stringify(userCredentials)})
   }
 
   // Get user credentials from local storage for future login  
   async getCredentials() {
-    const { value } = await Storage.get({key: 'COMEXPOSIUM_USERCREDENTIALS'})
+    const { value } = await Storage.get({key: 'PREVENTICA_USERCREDENTIALS'})
     return value
   }
 
   // Remove user credentials from local Storage  
   async removeCredentials() {
-    await Storage.remove({key: 'COMEXPOSIUM_USERCREDENTIALS'})
+    await Storage.remove({key: 'PREVENTICA_USERCREDENTIALS'})
+  }
+
+  // Save the update state for iOS app reload
+  setUpdateReady(state: string) {
+    console.info ("--- setUpdateReady ---")
+    Storage.set({key: "PREVENTICA_UPDATEREADY", value: state})
+  }
+
+  // Get user credentials from local storage for future login  
+  async getUpdateReady() {
+    console.info ("--- getUpdateReady ---")
+    const { value } = await Storage.get({key: 'PREVENTICA_UPDATEREADY'})
+    return value
   }
 
   // Select the latest open salon
@@ -96,9 +118,18 @@ export class GlobalService {
         console.log ("salonDateStart", salonDateStart)
         console.log ("salonDateEnd", salonDateEnd)
         if (today >= salonDateStart && today <= salonDateEnd) {
-          this.salonsList.push(
-            { salonId: salon.id, id_salon: newSalon.code, city: newSalon.city, year: newSalon.year }
-          )
+          this.salonsList.push({
+            id: salon.id,
+            code: newSalon.code,
+            city: newSalon.city,
+            year: newSalon.year,
+            dateStart: new Date(newSalon.dateStart.seconds * 1000),
+            dateEnd: new Date(newSalon.dateEnd.seconds * 1000)
+          })
+
+          // this.salonsList.push(
+          //   { salonId: salon.id, id_salon: newSalon.code, city: newSalon.city, year: newSalon.year }
+          // )
         }
       });
       console.log("salonsList", this.salonsList)
@@ -119,7 +150,7 @@ export class GlobalService {
     })
 
     // Update exposant tags in Firestore
-    const exposantRef = doc(this.firestore, "clients/" + environment.clientId + "/salons/" + this.userCredentials.salonId + "/exposants/" + this.userCredentials.exposantId)
+    const exposantRef = doc(this.firestore, "clients/" + environment.clientId + "/salons/" + this.userCredentials.salon.id + "/exposants/" + this.userCredentials.exposantId)
     updateDoc(exposantRef, {tags: tagNames})
 
     // Update exposant tags in local array

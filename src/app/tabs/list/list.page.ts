@@ -19,7 +19,7 @@ export class ListPage {
     private loadingCtrl: LoadingController,
     private navCtrl: NavController,
     private firestore: Firestore,
-    private globalService: GlobalService,
+    public globalService: GlobalService,
     public scanService: ScanService,
     private zone: NgZone,
     private alertCtrl: AlertController

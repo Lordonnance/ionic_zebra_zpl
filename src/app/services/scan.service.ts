@@ -36,7 +36,7 @@ export class ScanService {
   /*
   FIRESTORE PERSISENCE NO NEED TO KEEP A LOCAL COPY OF SCANS
   setScansList() {
-    Storage.set({key: "COMEXPOSIUM_SCANSLIST", value: JSON.stringify(this.scansList)})
+    Storage.set({key: "PREVENTICA_SCANSLIST", value: JSON.stringify(this.scansList)})
   }
   */
 
@@ -60,12 +60,12 @@ export class ScanService {
     */
 
     // 1 - Init local scans array from Storage
-    // const { value } = await Storage.get({key: 'COMEXPOSIUM_SCANSLIST'})
+    // const { value } = await Storage.get({key: 'PREVENTICA_SCANSLIST'})
     // if (value !== null)
     //   this.scansList = JSON.parse(value)
 
     // 2 - Observe firestore scans collection this.firestore
-    const scansCollectionRef = collection(this.firestore, "clients/" + environment.clientId + "/salons/" + this.globalService.userCredentials.salonId + "/exposants/" + this.globalService.userCredentials.exposantId + "/scans")
+    const scansCollectionRef = collection(this.firestore, "clients/" + environment.clientId + "/salons/" + this.globalService.userCredentials.salon.id + "/exposants/" + this.globalService.userCredentials.exposantId + "/scans")
     onSnapshot(query(scansCollectionRef, orderBy('scanId', 'desc')), { includeMetadataChanges: true },
     (firestoreScans) => {
       this.hasPendingWrites = firestoreScans.metadata.hasPendingWrites
@@ -181,6 +181,9 @@ export class ScanService {
 
     this.newlyScannedData = {
       "scanId": "",
+      "salonId": this.globalService.userCredentials.salon.id,
+      "salonCity": this.globalService.userCredentials.salon.city,
+      "salonYear": this.globalService.userCredentials.salon.year,
       "companyId": "",
       "company": "",
       "companyAddress1": "",
@@ -266,7 +269,7 @@ export class ScanService {
 
     try {
       // Set the new scan data to Firestore
-      const scanRef = doc(this.firestore, "clients/" + environment.clientId + "/salons/" + this.globalService.userCredentials.salonId + "/exposants/" + this.globalService.userCredentials.exposantId + "/scans/" + this.newlyScannedData["scanId"])
+      const scanRef = doc(this.firestore, "clients/" + environment.clientId + "/salons/" + this.globalService.userCredentials.salon.id + "/exposants/" + this.globalService.userCredentials.exposantId + "/scans/" + this.newlyScannedData["scanId"])
       setDoc(scanRef, this.newlyScannedData)
       this.newlyScannedData = null;
 
@@ -293,7 +296,7 @@ export class ScanService {
     } catch (error) {      
       const scanError: any = {
         clientId: environment.clientId,
-        salonId: this.globalService.userCredentials.salonId,
+        salonId: this.globalService.userCredentials.salon.id,
         exposantId: this.globalService.userCredentials.exposantId,
         scanId: this.newlyScannedData["scanId"],
         moment: "ionViewWillEnter() in listing.page.ts",

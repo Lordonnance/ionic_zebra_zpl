@@ -14,14 +14,35 @@
   </ion-header>
 
   <ion-list>
-    <ion-item (click)="openTerms()">
+    <ion-item detail (click)="openTerms()">
       <ion-label>Conditions générales d'utilisation</ion-label>
     </ion-item>
-    <ion-item *ngIf="bootService.isNewUpdateAvailable && !scanService.hasPendingWrites" (click)="performAutomaticUpdate()">
+    <!-- 
+      <ion-item detail (click)="openIntro()">
+        <ion-label>Revoir l'introduction</ion-label>
+      </ion-item>
+    -->
+  
+    <ion-item detail *ngIf="bootService.isNewUpdateAvailable && !scanService.hasPendingWrites" (click)="performAutomaticUpdate()">
       <ion-label>Mettre à jour</ion-label>
+    </ion-item>
+ 
+    <ion-item (click)="editExposantName()">
+      <ion-label>Utilisateur : {{ globalService.userCredentials.exposantName }}</ion-label>
+      <ion-icon slot="end" name="create-outline"></ion-icon>
+    </ion-item>
+    <ion-item>
+      <ion-label>Exposant : {{ globalService.loggedInExposantData.company }}</ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-label>Salon : {{ globalService.userCredentials.salon.city }} {{ globalService.userCredentials.salon.year }}</ion-label>
     </ion-item>
     <ion-item (click)="logout()">
       <ion-label>Se déconnecter</ion-label>
+      <ion-icon slot="end" name="log-out-outline"></ion-icon>
+    </ion-item>
+    <ion-item lines="none">
+      <ion-label><p>Version {{ bootService.applicationVersion }}</p></ion-label>
     </ion-item>
   </ion-list>
 </ion-content>

@@ -1,10 +1,17 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-back-button text="Retour" defaultHref="tabs/settings"></ion-back-button>
+    <ion-buttons *ngIf="!isModal" slot="start">
+      <ion-back-button *ngIf="bootService.devicePlatform === 'ios'" text="Retour" defaultHref="tabs/settings"></ion-back-button>
+      <ion-back-button *ngIf="bootService.devicePlatform !== 'ios'" text="" defaultHref="tabs/settings"></ion-back-button>
     </ion-buttons>
     
     <ion-title>Conditions générales</ion-title>
+
+    <ion-buttons *ngIf="isModal" slot="primary">
+      <ion-button (click)="modalController.dismiss({'dismissed': true})">
+        <ion-icon name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
@@ -16,13 +23,13 @@
   </ion-header>
   
   <div class="ion-padding">
-    <p>
-      Version {{ bootService.applicationVersion }}, mise en ligne le 3 Janvier 2022
-    </p>
+    <!-- <p>
+      Version {{ bootService.applicationVersion }}, mise en ligne le 19 Janvier 2022
+    </p> -->
 
-    <h1>CONDITIONS D’UTILISATION</h1>
+    <!-- <h1>CONDITIONS D’UTILISATION</h1> -->
     <p>
-      Les présentes conditions générales ont pour objet de définir les modalités d’utilisation du logiciel Comexposium by MND (ci-après, le « LOGICIEL » et « IRCI »).
+      Les présentes conditions générales ont pour objet de définir les modalités d’utilisation du logiciel Preventica by MND (ci-après, le « LOGICIEL » et « IRCI »).
       On considère comme UTILISATION le fait de télécharger, installer, copier ou utiliser le LOGICIEL.
       Le contenu des conditions d’utilisation est applicable uniquement au logiciel développé par IRCI et non à des éléments des tiers qi pourraient être ajoutés.
       L’UTILISATEUR est le particulier ou une entité commerciale qui télécharge le LOGICIEL. 

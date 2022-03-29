@@ -1,10 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { GlobalService } from '../../../services/global.service';
 import { ScanService } from '../../../services/scan.service';
 
 import { Deploy } from 'cordova-plugin-ionic/dist/ngx';
-import { AlertController, LoadingController } from '@ionic/angular';
+import { AlertController, LoadingController, ModalController } from '@ionic/angular';
 import { BootService } from '../../../services/boot.service';
 
 @Component({
@@ -16,9 +16,13 @@ export class TermsPage implements OnInit {
   isNewUpdateAvailable: boolean = false
   updatePercentDone: number = 0
 
+  // Data passed in by componentProps
+  @Input() isModal: boolean;
+
   constructor(
     private router: Router,
     private loadingCtrl: LoadingController,
+    public modalController: ModalController,
     private globalService: GlobalService,
     public bootService: BootService,
     public scanService: ScanService,

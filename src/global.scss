@@ -24,3 +24,8 @@
 @import "~@ionic/angular/css/text-alignment.css";
 @import "~@ionic/angular/css/text-transformation.css";
 @import "~@ionic/angular/css/flex-utils.css";
+
+////////  Make the body transparent with CSS for Dark Mode
+body.qrscanner {
+    background-color: transparent;
+}

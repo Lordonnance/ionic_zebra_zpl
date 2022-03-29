@@ -4,6 +4,8 @@ import { GlobalService } from '../services/global.service';
 
 import { Firestore, collection, collectionSnapshots } from '@angular/fire/firestore';
 import { environment } from 'src/environments/environment';
+import { AlertController } from '@ionic/angular';
+import { BootService } from '../services/boot.service';
 
 @Component({
   selector: 'app-start',
@@ -15,15 +17,14 @@ export class StartPage implements OnInit {
   constructor(
     private router: Router,
     private globalService: GlobalService,
-    private firestore: Firestore
+    private bootService: BootService,
+    private firestore: Firestore,
+    private alertController: AlertController
   ) {
     console.log ("--- StartPage constructor ---")
-
-    // Getting all salons in order to login with a particular salon
-    // With Comexposium salon choice will be available post login and won't be ask at login step.
-    // this.globalService.getAllSalons()
   }
 
+  /*
   async ngOnInit() {
     console.log ("--- ngOnInit ---")
 
@@ -35,7 +36,43 @@ export class StartPage implements OnInit {
       this.router.navigateByUrl('login')
     }
   }
+  */
 
+  async ngOnInit() {
+    console.log ("--- START ngOnInit ---")
+
+    // Check if an update has been downloaded
+    let isUpdateReady: string = await this.globalService.getUpdateReady()
+    console.log ("isUpdateReady", isUpdateReady)
+    if (
+      isUpdateReady !== null &&
+      JSON.parse(isUpdateReady) &&
+      this.bootService.devicePlatform === 'ios'
+    ) {
+      this.globalService.setUpdateReady("false")
+      // await this.deploy.reloadApp();
+
+      // iOS alert the user he must quit and restart the app in order to apply the update
+      const alert = await this.alertController.create({
+        header: 'Mise à jour terminée',
+        message: 'Vous pouvez quitter et relancer l\'application afin de l\'appliquer',
+        backdropDismiss: false
+      });
+
+      await alert.present();
+    } else {
+      // Check Storage credentials for automatic login
+      let userCredentials: any = await this.globalService.getCredentials()
+      console.log ("userCredentials", userCredentials)
+      if (userCredentials !== null) {
+        // Login the exposant with saved user credentials
+        // this.router.navigateByUrl('login', { id: heroId });
+        this.router.navigateByUrl('login')
+      }
+    }
+  }
+
+  /*
   // Test firebase connection
   async test() {
     console.info ("test")
@@ -61,16 +98,8 @@ export class StartPage implements OnInit {
       else
       console.log("Nous n'arrivons pas à connecter votre compte. Merci de contacter le distributeur de l'application si le problème persiste.");
     })
-    
-    /*
-    this.firestore
-    .collection("clients/" + environment.clientId + "/exposants").get()
-    .subscribe((exposants) => {
-      console.info ("Just after calling firestore")
-      console.log ("exposants", exposants)
-    })
-    */
   }
+  */
 
 
   // User clicked on "register" button => go to register page

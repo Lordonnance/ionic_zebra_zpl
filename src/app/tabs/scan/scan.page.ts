@@ -31,11 +31,14 @@ export class ScanPage {
     // let ionApp = <HTMLElement>document.getElementsByTagName("ion-content")[0];
     // ionApp.style.display = "none!important";
 
+    // 0 - Prepare scan
+    await BarcodeScanner.prepare()
+
     // 1 - Check CAMERA permission
     const status = await BarcodeScanner.checkPermission({force: true});
     console.log ("check permissions results", JSON.stringify(status))
 
-    if (status.denied) {
+    if ((status.asked && typeof status.granted === 'undefined' && typeof status.denied === 'undefined') || (typeof status.granted !== 'undefined' && !status.granted) || (typeof status.denied !== 'undefined' && status.denied)) {
       // the user denied permission for good
       // redirect user to app settings if they want to grant it anyway
       const c = confirm(
@@ -44,35 +47,35 @@ export class ScanPage {
       if (c) {
         BarcodeScanner.openAppSettings();
       }
-    }
-
-    // PREVENTICA - Test if the device still have a valid license before scanning a new visitor
-    if (!this.isLicenceActive()) {
-      // Alert the user that his license is not valid anymore
-      const alert = await this.alertCtrl.create({
-        header: "License supprimée",
-        message: "Merci de contacter votre responsable, votre licence d'utilisation a été retirée.",
-        buttons: [
-          {
-            text: 'Me reconnecter',
-            role: 'cancel',
-            handler: () => {
-              console.log('Cancel clicked');
-
-              // Reset scanService attributes
-              this.scanService.resetScanAttributes()
-              
-              // Logout the user
-              this.globalService.logout()
-            }
-          }
-        ]
-      });
-      await alert.present();
     } else {
-      // Start looking for QR code badges
-      this.scan()
-    } 
+      // PREVENTICA - Test if the device still have a valid license before scanning a new visitor
+      if (!this.isLicenceActive()) {
+        // Alert the user that his license is not valid anymore
+        const alert = await this.alertCtrl.create({
+          header: "License supprimée",
+          message: "Merci de contacter votre responsable, votre licence d'utilisation a été retirée.",
+          buttons: [
+            {
+              text: 'Me reconnecter',
+              role: 'cancel',
+              handler: () => {
+                console.log('Cancel clicked');
+
+                // Reset scanService attributes
+                this.scanService.resetScanAttributes()
+                
+                // Logout the user
+                this.globalService.logout()
+              }
+            }
+          ]
+        });
+        await alert.present();
+      } else {
+        // Start looking for QR code badges
+        this.scan()
+      }
+    }
   }
 
   // PREVENTICA - Test if the device still have a valid license before scanning a new visitor
@@ -91,6 +94,11 @@ export class ScanPage {
 
   // Start looking for QR code badges
   async scan() {
+    console.info ("--- scan ---")
+
+    // 1 - Make the body transparent with CSS for Dark Mode
+    document.body.classList.add('qrscanner');
+
     // 2 - Hide the background in order to see the camera
     BarcodeScanner.hideBackground()
 
@@ -104,24 +112,40 @@ export class ScanPage {
         // Parse the QRCode content
         const isScanCorrect: boolean = this.scanService.parseScan(result.content)
         if (isScanCorrect) {
+          // Remove body transparenccy used for dark modes
+          document.body.classList.remove('qrscanner');
+
           // Synchronize scan and redirect to profile page
           this.scanService.synchronizeAndOpenScan()
           // Go to profile page
           // this.router.navigateByUrl("tabs/list")
         } else {
+          // Alert the user the scan is incorrect
+          this.globalService.showAlert('Ce QR code est invalide');
           // Incorrect scan, do it again
           this.scan()
         }
+      } else {
+        // Alert the user the scan is incorrect
+        this.globalService.showAlert('Ce QR code est invalide');
+        // Incorrect scan, do it again
+        this.scan()
       }
     } catch (error) {
       console.error ("Error starting scan, may CAMERA persmission")
       console.error(error)
+
+      // Remove body transparenccy used for dark modes
+      document.body.classList.remove('qrscanner');
     }
   }
 
   ionViewDidLeave() {
     // let ionApp = <HTMLElement>document.getElementsByTagName("ion-content")[0];
     // ionApp.style.display = "block";
+
+    // Remove body transparenccy used for dark modes
+    document.body.classList.remove('qrscanner');
 
     BarcodeScanner.showBackground()
     BarcodeScanner.stopScan()

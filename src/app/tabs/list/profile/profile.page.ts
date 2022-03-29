@@ -17,7 +17,8 @@ export class ProfilePage implements OnInit, OnDestroy {
   tags = [];
   date = "";
   isLoggedIn = true;
-
+  fileAlreadyUpdated: boolean = false
+  
   constructor(
     private navCtrl: NavController, 
     private alertCtrl: AlertController,
@@ -31,6 +32,12 @@ export class ProfilePage implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    console.info ("--- Profile ngOnDestroy ---")
+    console.log ("this.fileAlreadyUpdated", this.fileAlreadyUpdated)
+
+    if (!this.fileAlreadyUpdated)
+      this.updateScanData()
+
     this.scanService.selectedScanData = null;
     this.scanService.selectedScanIndex = -1;
   }
@@ -106,7 +113,7 @@ export class ProfilePage implements OnInit, OnDestroy {
     
     try {
       // Set the new scan data to Firestore
-      const scanRef = doc(this.firestore, "clients/" + environment.clientId + "/salons/" + this.globalService.userCredentials.salonId + "/exposants/" + this.globalService.userCredentials.exposantId + "/scans/" + this.scanService.selectedScanData["scanId"])
+      const scanRef = doc(this.firestore, "clients/" + environment.clientId + "/salons/" + this.globalService.userCredentials.salon.id + "/exposants/" + this.globalService.userCredentials.exposantId + "/scans/" + this.scanService.selectedScanData["scanId"])
       setDoc(scanRef, this.scanService.selectedScanData)
     
       /*
@@ -114,11 +121,12 @@ export class ProfilePage implements OnInit, OnDestroy {
       this.scanService.scansList[this.scanService.selectedScanIndex] = this.scanService.selectedScanData;
       this.scanService.setScansList();
       */
+      this.fileAlreadyUpdated = true
       this.navCtrl.navigateBack('tabs/list');
     } catch (error) {      
       const scanError: any = {
         clientId: environment.clientId,
-        salonId: this.globalService.userCredentials.salonId,
+        salonId: this.globalService.userCredentials.salon.id,
         exposantId: this.globalService.userCredentials.exposantId,
         scanId: this.scanService.selectedScanData["scanId"],
         moment: "ionViewWillEnter() in listing.page.ts",
