@@ -20,9 +20,9 @@ import { ScanService } from '../services/scan.service';
 })
 export class LoginPage implements OnInit {
   loading: any;
-  email: string = "test@yopmail.com";
-  pwd: string = "PreventicaLille";
-  exposantName: string = "Commercial 1";
+  email: string = "";
+  pwd: string = "";
+  exposantName: string = "";
   // email: string = "neox_angelo@hotmail.com";
   // pwd: string = "preventica";
   // salonId: string = "";
