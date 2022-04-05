@@ -1,0 +1,6 @@
+{
+	"appId": "com.mnd.irci.preventica",
+	"appName": "preventica",
+	"webDir": "www",
+	"bundledWebRuntime": false
+}

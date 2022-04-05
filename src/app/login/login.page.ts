@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AlertController, LoadingController, ModalController } from '@ionic/angular';
 
-import { Auth, signInWithEmailAndPassword, User, UserCredential } from '@angular/fire/auth';
+import { Auth, sendPasswordResetEmail, signInWithEmailAndPassword, User, UserCredential } from '@angular/fire/auth';
 import { Firestore, getDocs, collection, doc, getDoc, updateDoc, DocumentReference } from '@angular/fire/firestore';
 
 import { GlobalService, Salon, UserCredentials } from 'src/app/services/global.service';
@@ -59,8 +59,6 @@ export class LoginPage implements OnInit {
     console.log ("--- ngOnInit ---")
     this.loading = await this.loadingCtrl.create();
 
-    // From AGII
-
     // Try login with remember data if any
     // const { value } = await Storage.get({key: 'AGII_USER_CREDENTIALS'})
     const userCredentialsStr: string = await this.globalService.getCredentials()
@@ -70,6 +68,7 @@ export class LoginPage implements OnInit {
       loggedInExposantData != null
     ) {
       const userCredentials: UserCredentials = JSON.parse(userCredentialsStr)
+      console.log ("UserCredentials", userCredentials)
       this.email = userCredentials.email
       this.pwd = userCredentials.pwd
       this.exposantName = userCredentials.exposantName
@@ -115,6 +114,14 @@ export class LoginPage implements OnInit {
         }, 2000)
       }
     }
+    /*
+    else {
+      this.email = "";
+      this.pwd = "";
+      this.exposantName = "";
+      this.salon = {} as Salon
+    }
+    */
   }
 
   // Proceed with login validation and authentication
@@ -127,19 +134,19 @@ export class LoginPage implements OnInit {
 
     // Register form fields validation
     if (this.exposantName.length <= 0) {
-      this.showDlg("Merci de rentrer votre nom qui sera associé à chacun de vos scans")
+      this.showDlg("Problème de connexion", "Merci de rentrer votre nom qui sera associé à chacun de vos scans")
       return
     } else if (!this.validateEmail(this.email)) {
-      this.showDlg("Merci de rentrer une adresse e-mail valide")
+      this.showDlg("Problème de connexion", "Merci de rentrer une adresse e-mail valide")
       return
     } else if (this.pwd.length < 5) {
-      this.showDlg("Le mot de passe doit faire au moins 5 caractères")
+      this.showDlg("Problème de connexion", "Le mot de passe doit faire au moins 5 caractères")
       return
     } else if (this.salon.id == "" && this.globalService.salonsList.length === 0) {
-      this.showDlg("Aucun salon disponible actuellement")
+      this.showDlg("Problème de connexion", "Aucun salon disponible actuellement")
       return
     } else if (this.salon.id == "") {
-      this.showDlg("Merci de sélectionner un salon")
+      this.showDlg("Problème de connexion", "Merci de sélectionner un salon")
       return
     }
 
@@ -159,15 +166,15 @@ export class LoginPage implements OnInit {
       console.log("Firebase auth error catched", error)
       console.log(error.code)
       if (error.code == "auth/invalid-email")
-        this.showDlg("Merci de vérifier le format de votre adresse e-mail")
+        this.showDlg("Problème de connexion", "Merci de vérifier le format de votre adresse e-mail")
       else if (error.code == "auth/wrong-password")
-        this.showDlg("Mot de passe incorrect");
+        this.showDlg("Problème de connexion", "Mot de passe incorrect");
       else if (error.code == "auth/network-request-failed")
-        this.showDlg("L'application éprouve des difficultés à accéder à Internet. Merci de vérifier votre connexion et de réessayer.")
+        this.showDlg("Problème de connexion", "L'application éprouve des difficultés à accéder à Internet. Merci de vérifier votre connexion et de réessayer.")
       else if (error.code == "auth/user-not-found")
-        this.showDlg("Aucun compte rattaché à cette adresse e-mail");
+        this.showDlg("Problème de connexion", "Aucun compte rattaché à cette adresse e-mail");
       else
-      this.showDlg("Nous n'arrivons pas à connecter votre compte. Merci de contacter le distributeur de l'application si le problème persiste.");
+      this.showDlg("Problème de connexion", "Nous n'arrivons pas à connecter votre compte. Merci de contacter le distributeur de l'application si le problème persiste.");
 
       return
     }
@@ -227,7 +234,7 @@ export class LoginPage implements OnInit {
           this.router.navigateByUrl('');
         } else {
           if (exposantData.licences <= 0) {
-            this.showDlg("Désolé, vous n'avez aucune licence pour ce salon... Merci de joindre le XX XX XX XX XX")
+            this.showDlg("Problème de connexion", "Désolé, vous n'avez aucune licence pour ce salon... Merci de vous adresser à l'accueil exposant.")
           } else {
             console.info("--- opening devices modal ---")
             this.loading.dismiss()
@@ -259,20 +266,20 @@ export class LoginPage implements OnInit {
       this.loading.dismiss()
 
       if (!isSalonCorrect) {
-        this.showDlg("Aucun salon enregistrée pour ce compte exposant")
+        this.showDlg("Problème de connexion", "Aucun salon enregistrée pour ce compte exposant")
       }
     } catch (error) {
       this.loading.dismiss()
       console.log("Firestore error", error)
       console.log(error.code)
-      this.showDlg("Nous n'arrivons pas à connecter votre compte. Merci de contacter le distributeur de l'application si le problème persiste.");
+      this.showDlg("Problème de connexion", "Nous n'arrivons pas à connecter votre compte. Merci de contacter le distributeur de l'application si le problème persiste.");
       return
     }
   }
 
-  async showDlg(msg) {
+  async showDlg(header: string, msg: string) {
     const alert = await this.alertCtrl.create({
-      header: "Problème de connexion",
+      header: header,
       message: msg,
       buttons: [
         {
@@ -286,6 +293,32 @@ export class LoginPage implements OnInit {
     });
     await alert.present();
   }
+
+  async goForgot() {
+    console.info("--- goForgot ---")
+
+    if (this.validateEmail(this.email)) {
+      let loading = await this.loadingCtrl.create();
+      sendPasswordResetEmail(this.auth, this.email)
+        .then(() => {
+          loading.dismiss()
+          this.showDlg("Mot de passe oublié", "Un lien pour réinitialiser votre mot de passe a été envoyé àl'adresse <strong>" + this.email + "</strong>" )
+        })
+        .catch((error) => {
+          loading.dismiss()
+          console.log (error)
+          if (error.code == "auth/invalid-email")
+            this.showDlg("Adresse invalide", "Merci de vérifier le format de votre adresse e-mail")
+          else if (error.code == "auth/network-request-failed")
+            this.showDlg("Problème réseau", "L'application éprouve des difficultés à accéder à Internet. Merci de vérifier votre connexion et de réessayer.")
+          else
+            this.showDlg("Une erreur est survenue", error.message)
+        })
+    } else {
+      this.showDlg("Erreur", "Merci de rentrer une adresse e-mail valide")
+    }
+  }
+
 
   // Show the user the application version in a dialog alert
   async showVersionNumber() {

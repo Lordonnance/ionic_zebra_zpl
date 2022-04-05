@@ -39,7 +39,17 @@
     </ion-toolbar>
   </ion-header>
 
-  <ion-list>
+  <div *ngIf="scanService.scansList.length <= 0" class="ion-padding">
+    <p>
+      Votre application est maintenant configurée sur le compte <strong>{{ globalService.loggedInExposantData.company }}</strong>.
+      <br /><br />Si cette information est erronée, merci de vous déconnecter via l'onglet paramètres.
+      <br /><br />Vous n'avez aucun lead enregistré.
+      <br /><br />Commencez à scanner vos premiers badges en cliquant sur le bouton 
+      <ion-icon name="qr-code-outline"></ion-icon> en bas à gauche de votre écran.
+    </p>
+  </div>
+
+  <ion-list *ngIf="scanService.scansList.length > 0">
     <ion-item detail *ngFor="let scan of scanService.scansList; let scanIndex=index" (click)="scanService.openScan(scanIndex)">
       <ion-label>
         <h2>{{ scan.firstname }} {{ scan.lastname }}</h2>

@@ -85,7 +85,7 @@ export class ExportPage {
   async alertSuccess() {
     const alert = await this.alertCtrl.create({
       header: 'Archive envoyée par e-mail',
-      message: "L'archive a été envoyée à <strong>" + this.globalService.loggedInExposantData.email + "</strong>.<br /><br />Utilisez votre code exposant <strong>" + this.globalService.loggedInExposantData.idgc + "</strong> comme mot de passe afin de lire l'archive contenant les fiches d'information scannées.<br /><br />Pensez à vérifier vos spams et courriers indésirables en cas de non réception.",
+      message: "L'archive a été envoyée à <strong>" + this.globalService.loggedInExposantData.email + "</strong>.<br /><br />Utilisez votre code exposant <strong>" + this.globalService.loggedInExposantData.code + "</strong> comme mot de passe afin de lire l'archive contenant les fiches d'information scannées.<br /><br />Pensez à vérifier vos spams et courriers indésirables en cas de non réception.",
       buttons: ['OK']
     });
     await alert.present();

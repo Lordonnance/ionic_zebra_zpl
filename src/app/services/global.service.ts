@@ -174,7 +174,7 @@ export class GlobalService {
     signOut(this.auth)
 
     // 4 - Redirect to login page
-    this.router.navigateByUrl('login');
+    this.router.navigateByUrl('start');
   }
 
   // Alert the user with a specific message

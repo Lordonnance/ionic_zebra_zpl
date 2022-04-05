@@ -3,7 +3,7 @@
 
   <form>
     <ion-item>
-      <ion-label position="stacked">Votre nom</ion-label>
+      <ion-label position="stacked">Nom utilisateur</ion-label>
       <ion-input type="text" name="exposantName" [(ngModel)]="exposantName"></ion-input>
     </ion-item>
     <ion-item>
@@ -25,10 +25,8 @@
     </ion-item> 
   </form>
 
-  <!-- 
-    Passwords willl be fixed at startup and not editable
+    <!-- Passwords willl be fixed at startup and not editable -->
     <ion-button fill="clear" class="btn_forgot" (click)="goForgot()">Générer un nouveau mot de passe</ion-button>
-  -->
 </ion-content>
 
 <ion-footer class="ion-padding ion-no-border">
