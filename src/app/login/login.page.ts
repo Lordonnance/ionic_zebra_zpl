@@ -91,10 +91,14 @@ export class LoginPage implements OnInit {
         const loading = await this.loadingCtrl.create()
         await loading.present();
 
-        // Set logged in expoant data into local Storage AND in globalService attribute
-        this.globalService.setLoggedInExposantData(JSON.parse(loggedInExposantData)) 
         // Set user credentials into local Storage AND in globalService attribute
         this.globalService.setCredentials({'email': this.email, 'pwd': this.pwd, 'exposantName': this.exposantName, 'exposantId': userCredentials.exposantId, 'salon': this.salon})
+
+        // Set logged in expoant data into local Storage AND in globalService attribute
+        this.globalService.setLoggedInExposantData(JSON.parse(loggedInExposantData)) 
+
+        // Listen to expoant data update from firestore
+        this.globalService.syncLoggedInExposant()
 
         // Select the latest open salon
         // this.globalService.selectLatestOpenSalon()
@@ -226,6 +230,9 @@ export class LoginPage implements OnInit {
 
           // Set logged in expoant data into local Storage
           this.globalService.setLoggedInExposantData(exposantData)
+
+          // Listen to expoant data update from firestore
+          this.globalService.syncLoggedInExposant()
 
           // Synchronize local scans with firestore scans
           this.scanService.synchronizeScans();

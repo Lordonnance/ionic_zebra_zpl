@@ -1,7 +1,7 @@
 import { JsonPipe } from '@angular/common';
 import { Injectable } from '@angular/core';
 import { Auth, signOut } from '@angular/fire/auth';
-import { Firestore, collection, getDocs, doc, updateDoc } from '@angular/fire/firestore';
+import { Firestore, collection, getDocs, doc, updateDoc, onSnapshot } from '@angular/fire/firestore';
 import { Router } from '@angular/router';
 
 import { Storage } from '@capacitor/storage';
@@ -47,11 +47,23 @@ export class GlobalService {
 
   // Set logged in exposant data into local Storage  
   setLoggedInExposantData(exposantData) {
+    console.info ("--- setLoggedInExposantData ---")
+
     this.loggedInExposantData = exposantData
     Storage.set({key: "PREVENTICA_LOGGEDINEXPOSANTDATA", value: JSON.stringify(exposantData)})
 
     // Retreive exposant tags
     this.tagsList = (typeof exposantData.tags !== 'undefined' && exposantData.tags.length > 0) ? exposantData.tags : []
+  }
+
+  // Listen to expoant data update from firestore
+  syncLoggedInExposant() {
+    console.info ("--- syncLoggedInExposant ---")
+    
+    const exposantDocRef = doc(this.firestore, "clients/" + environment.clientId + "/salons/" + this.userCredentials.salon.id + "/exposants/" + this.userCredentials.exposantId)
+    onSnapshot(exposantDocRef, (exposantData) => {
+        this.setLoggedInExposantData(exposantData.data())
+    })
   }
 
   // Get logged in exposant data from local Storage  
@@ -62,6 +74,7 @@ export class GlobalService {
 
   // Remove logged in exposant data from local Storage  
   async removeLoggedInExposantData() {
+    console.info ("--- removeLoggedInExposantData ---")
     await Storage.remove({key: 'PREVENTICA_LOGGEDINEXPOSANTDATA'})
   }
   

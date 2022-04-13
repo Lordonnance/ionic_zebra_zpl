@@ -31,48 +31,50 @@ export class ScanPage {
     // let ionApp = <HTMLElement>document.getElementsByTagName("ion-content")[0];
     // ionApp.style.display = "none!important";
 
-    // 0 - Prepare scan
-    await BarcodeScanner.prepare()
+    // PREVENTICA - Test if the device still have a valid license before scanning a new visitor
+    if (!this.isLicenceActive()) {
+      // Alert the user that his license is not valid anymore
+      const alert = await this.alertCtrl.create({
+        header: "License supprimée",
+        message: "Merci de contacter votre responsable, votre licence d'utilisation a été retirée.",
+        buttons: [
+          {
+            text: 'Me reconnecter',
+            handler: () => {
+              console.log('Logout clicked');
 
-    // 1 - Check CAMERA permission
-    const status = await BarcodeScanner.checkPermission({force: true});
-    console.log ("check permissions results", JSON.stringify(status))
-
-    if ((status.asked && typeof status.granted === 'undefined' && typeof status.denied === 'undefined') || (typeof status.granted !== 'undefined' && !status.granted) || (typeof status.denied !== 'undefined' && status.denied)) {
-      // the user denied permission for good
-      // redirect user to app settings if they want to grant it anyway
-      const c = confirm(
-        'Merci d\'autoriser la caméra depuis les paramètres du téléphone si vous souhaitez scanner un badge',
-      );
-      if (c) {
-        BarcodeScanner.openAppSettings();
-      }
-    } else {
-      // PREVENTICA - Test if the device still have a valid license before scanning a new visitor
-      if (!this.isLicenceActive()) {
-        // Alert the user that his license is not valid anymore
-        const alert = await this.alertCtrl.create({
-          header: "License supprimée",
-          message: "Merci de contacter votre responsable, votre licence d'utilisation a été retirée.",
-          buttons: [
-            {
-              text: 'Me reconnecter',
-              role: 'cancel',
-              handler: () => {
-                console.log('Cancel clicked');
-
-                // Reset scanService attributes
-                this.scanService.resetScanAttributes()
-                
-                // Logout the user
-                this.globalService.logout()
-              }
+              // Reset scanService attributes
+              this.scanService.resetScanAttributes()
+              
+              // Logout the user
+              this.globalService.logout()
             }
-          ]
-        });
-        await alert.present();
+          }
+        ]
+      });
+      await alert.present();
+
+      // Lead back to list view
+      this.router.navigateByUrl('')
+    } else {
+      // 0 - Prepare scan
+      await BarcodeScanner.prepare()
+  
+      // 1 - Check CAMERA permission
+      const status = await BarcodeScanner.checkPermission({force: true});
+      console.log ("check permissions results", JSON.stringify(status))
+  
+      if ((status.asked && typeof status.granted === 'undefined' && typeof status.denied === 'undefined') || (typeof status.granted !== 'undefined' && !status.granted) || (typeof status.denied !== 'undefined' && status.denied)) {
+        // the user denied permission for good
+        // redirect user to app settings if they want to grant it anyway
+        const c = confirm(
+          'Merci d\'autoriser la caméra depuis les paramètres du téléphone si vous souhaitez scanner un badge',
+        );
+        if (c) {
+          BarcodeScanner.openAppSettings();
+        }
       } else {
-        // Start looking for QR code badges
+        // 3 - Start looking for QR code badges
         this.scan()
       }
     }
@@ -81,6 +83,8 @@ export class ScanPage {
   // PREVENTICA - Test if the device still have a valid license before scanning a new visitor
   isLicenceActive(): boolean {
     console.info ("--- isLicenceActive ---")
+    console.log ("this.globalService.loggedInExposantData.devices", this.globalService.loggedInExposantData.devices)
+    console.log ("this.bootService.deviceUUID", this.bootService.deviceUUID)
     let isLicenceUsed: boolean = false
 
     this.globalService.loggedInExposantData.devices.forEach((device) => {
