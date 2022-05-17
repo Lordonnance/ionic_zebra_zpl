@@ -7,7 +7,7 @@ import { GlobalService } from 'src/app/services/global.service';
 import { ScanService } from 'src/app/services/scan.service';
 import { environment } from 'src/environments/environment';
 
-import { Clipboard } from '@capacitor/clipboard';
+// import { Clipboard } from '@capacitor/clipboard';
 
 @Component({
   selector: 'app-profile',
@@ -64,6 +64,25 @@ export class ProfilePage implements OnInit, OnDestroy {
     console.log ("this.scanService.selectedScanData", this.scanService.selectedScanData)
     console.log ("Email to", this.scanService.selectedScanData["email"])
 
+
+/*
+        // Show copied email to the user
+        const alert = await this.alertCtrl.create({
+          header: "Aucun compte e-mail rattaché",
+          message: "Vous pouvez copié le mail directement ici<br /><br /><textarea>naon.mathieu@gmail.com</textarea>",
+          buttons: [
+            {
+              text: 'Ok',
+              role: 'cancel',
+              handler: () => {
+                console.log('Cancel clicked');
+              }
+            }
+          ]
+        });
+        await alert.present();
+        */
+
     try {
       const hasEmailAccount = await EmailComposer.hasAccount()
       console.log ("hasEmailAccount", hasEmailAccount)
@@ -79,17 +98,20 @@ export class ProfilePage implements OnInit, OnDestroy {
         };
         EmailComposer.open(emailSettings);
       } else {
+        /*
         // Copy the email address to the system clipboard
         await Clipboard.write({
           string: this.scanService.selectedScanData["email"]
         });
 
         const { type, value } = await Clipboard.read();
+        */
 
         // Show copied email to the user
+        // For now for Live Deploy without ClipBoard Capacitor Plugin just show the email in a textarea to copy it
         const alert = await this.alertCtrl.create({
-          header: "Adresse e-mail copiée",
-          message: value,
+          header: "Aucun compte e-mail rattaché",
+          message: "Vous pouvez copié l'e-mail directement ici<br /><br /><textarea>" + this.scanService.selectedScanData.email + "</textarea>",
           buttons: [
             {
               text: 'Ok',
