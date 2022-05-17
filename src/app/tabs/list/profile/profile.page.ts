@@ -7,6 +7,8 @@ import { GlobalService } from 'src/app/services/global.service';
 import { ScanService } from 'src/app/services/scan.service';
 import { environment } from 'src/environments/environment';
 
+import { Clipboard } from '@capacitor/clipboard';
+
 @Component({
   selector: 'app-profile',
   templateUrl: './profile.page.html',
@@ -66,15 +68,41 @@ export class ProfilePage implements OnInit, OnDestroy {
       const hasEmailAccount = await EmailComposer.hasAccount()
       console.log ("hasEmailAccount", hasEmailAccount)
 
-      const emailSettings: OpenOptions = {
-        to: [this.scanService.selectedScanData["email"]],
-        cc: [],
-        bcc: [],
-        subject: '',
-        body: '',
-        isHtml: false
-      };
-      EmailComposer.open(emailSettings);
+      if (hasEmailAccount.hasAccount) {
+        const emailSettings: OpenOptions = {
+          to: [this.scanService.selectedScanData["email"]],
+          cc: [],
+          bcc: [],
+          subject: '',
+          body: '',
+          isHtml: false
+        };
+        EmailComposer.open(emailSettings);
+      } else {
+        // Copy the email address to the system clipboard
+        await Clipboard.write({
+          string: this.scanService.selectedScanData["email"]
+        });
+
+        const { type, value } = await Clipboard.read();
+
+        // Show copied email to the user
+        const alert = await this.alertCtrl.create({
+          header: "Adresse e-mail copiée",
+          message: value,
+          buttons: [
+            {
+              text: 'Ok',
+              role: 'cancel',
+              handler: () => {
+                console.log('Cancel clicked');
+              }
+            }
+          ]
+        });
+        await alert.present();
+
+      }
     } catch (error) {
       console.error ("Client email not found", error)
     }
