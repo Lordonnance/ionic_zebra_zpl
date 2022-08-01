@@ -69,63 +69,59 @@ export class LoginPage implements OnInit {
     ) {
       const userCredentials: UserCredentials = JSON.parse(userCredentialsStr)
       console.log ("UserCredentials", userCredentials)
-      this.email = userCredentials.email
-      this.pwd = userCredentials.pwd
-      this.exposantName = userCredentials.exposantName
-      
-      // TODO: Check if salonId is still open cause during automatic login it is not checked...
-      // this.salonId = userCredentials.salonId
-      
-      // TODO: Check if salonId is still open cause during automatic login it is not checked...
-      this.salon = userCredentials.salon
+  
+      // TODO: Check if expirationDate of user credentials is still valid
+      const today: Date = new Date()
+      const expiryTimestamp: Date = new Date(userCredentials.expirationTimestamp)
+      console.log ("userCredentials.expirationTimestamp", expiryTimestamp)
+      console.log ("new Date()", today)
+      if (expiryTimestamp.getTime() > today.getTime()) {
+        this.email = userCredentials.email
+        this.pwd = userCredentials.pwd
+        this.exposantName = userCredentials.exposantName
+        this.salon = userCredentials.salon
 
-      // The user is using valid credentials, stored in Storage
-      // Proceed to home directly if Network connection if disabled
-      console.log ("this.bootService.networkStatus.connected", this.bootService.networkStatus.connected)
-      if (this.bootService.networkStatus.connected)
-        this.login()
-      else {
-        console.warn ("The user has valid but unchecked credentials cause to Internet connection diabled")
-      
-        // Display a loading spinner pending user connection
-        const loading = await this.loadingCtrl.create()
-        await loading.present();
+        // The user is using valid credentials, stored in Storage
+        // Proceed to home directly if Network connection if disabled
+        console.log ("this.bootService.networkStatus.connected", this.bootService.networkStatus.connected)
+        if (this.bootService.networkStatus.connected)
+          this.login()
+        else {
+          console.warn ("The user has valid but unchecked credentials cause to Internet connection diabled")
+        
+          // Display a loading spinner pending user connection
+          const loading = await this.loadingCtrl.create()
+          await loading.present();
 
-        // Set user credentials into local Storage AND in globalService attribute
-        this.globalService.setCredentials({'email': this.email, 'pwd': this.pwd, 'exposantName': this.exposantName, 'exposantId': userCredentials.exposantId, 'salon': this.salon})
+          // Refresh user credentials for a week
+          let nextWeek = new Date()
+          nextWeek.setDate(nextWeek.getDate() + 7)
+          // nextWeek.setMinutes(nextWeek.getMinutes() + 2)
+          // Set user credentials into local Storage AND in globalService attribute
+          this.globalService.setCredentials({'email': this.email, 'pwd': this.pwd, 'exposantName': this.exposantName, 'exposantId': userCredentials.exposantId, 'salon': this.salon, 'expirationTimestamp': nextWeek})
 
-        // Set logged in expoant data into local Storage AND in globalService attribute
-        this.globalService.setLoggedInExposantData(JSON.parse(loggedInExposantData)) 
+          // Set logged in expoant data into local Storage AND in globalService attribute
+          this.globalService.setLoggedInExposantData(JSON.parse(loggedInExposantData)) 
 
-        // Listen to expoant data update from firestore
-        this.globalService.syncLoggedInExposant()
+          // Listen to expoant data update from firestore
+          this.globalService.syncLoggedInExposant()
 
-        // Select the latest open salon
-        // this.globalService.selectLatestOpenSalon()
+          // Select the latest open salon
+          // this.globalService.selectLatestOpenSalon()
 
-        // ALREADY DONE - Save user credentials in local storage for future login
-        // this.globalService.setCredentials({'email': this.email, 'pwd': this.pwd, 'exposantName': this.exposantName})
+          // Synchronize scans with firestore scans
+          // Display scans from cache if offline
+          this.scanService.synchronizeScans();
 
-        // Synchronize scans with firestore scans
-        // Display scans from cache if offline
-        this.scanService.synchronizeScans();
-
-        setTimeout(() => {
-          // Lead the user to the scans listing
-          this.router.navigateByUrl('')
-          // Close the pending message
-          loading.dismiss()
-        }, 2000)
+          setTimeout(() => {
+            // Lead the user to the scans listing
+            this.router.navigateByUrl('')
+            // Close the pending message
+            loading.dismiss()
+          }, 2000)
+        }
       }
     }
-    /*
-    else {
-      this.email = "";
-      this.pwd = "";
-      this.exposantName = "";
-      this.salon = {} as Salon
-    }
-    */
   }
 
   // Proceed with login validation and authentication
@@ -197,8 +193,12 @@ export class LoginPage implements OnInit {
         // An exposant is registered in firestore for the given salon and client ids
         isSalonCorrect = true;
 
+        // Refresh user credentials for a week
+        let nextWeek = new Date()
+        nextWeek.setDate(nextWeek.getDate() + 7)
+        // nextWeek.setMinutes(nextWeek.getMinutes() + 2)
         // Save user credentials in local storage for future login
-        this.globalService.setCredentials({'email': this.email, 'pwd': this.pwd, 'exposantName': this.exposantName, 'exposantId': exposantSnapshot.id, 'salon': this.salon})
+        this.globalService.setCredentials({'email': this.email, 'pwd': this.pwd, 'exposantName': this.exposantName, 'exposantId': exposantSnapshot.id, 'salon': this.salon, 'expirationTimestamp': nextWeek})
         
         // PREVENTICA - Check if devices array includes deviceUUID  
         let isLicenceUsed: boolean = false

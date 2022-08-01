@@ -15,6 +15,7 @@ export interface UserCredentials {
     exposantName: string;
     pwd: string;
     email: string;
+    expirationTimestamp: Date;
 }
 
 export interface Salon {

@@ -10,8 +10,8 @@ import { Deploy } from 'cordova-plugin-ionic/dist/ngx';
   providedIn: 'root'
 })
 export class BootService {
-  applicationVersion: string = "1.0.3"
-  liveDeployVersion: string = "1"
+  applicationVersion: string = "1.1.1"
+  liveDeployVersion: string = "0"
 
   devicePlatform: string = "android"
   deviceUUID: string = ""
