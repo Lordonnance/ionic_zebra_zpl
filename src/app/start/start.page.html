@@ -1,12 +1,21 @@
-<ion-content class="ion-padding" force-overscroll="false">
-  <img class="img_logo" src="assets/images/logo.png" />
-  <h3 class="tx_content">
-    Bienvenue sur l’application scan de badges de Preventica.<br />Vous devez avoir un compte exposant pour pourvoir utiliser cette application.
-  </h3>
-</ion-content>
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>
+      Blank
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
 
-<ion-footer class="ion-padding ion-no-border">
-  <ion-button expand="block" size="default" color="primary" (click)="goToLogin()">
-    SE CONNECTER
-  </ion-button>
-</ion-footer>
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Blank</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <div id="container">
+    <ion-button (click)="printZPL()" [disabled]="isReaderConnected">Test Zebra</ion-button><br />
+    <!-- <ion-button (click)="startPaymentIntent()" [disabled]="!isReaderConnected">Start a payment</ion-button><br />
+    <ion-button (click)="disconnectReader()" [disabled]="!isReaderConnected">Disconnect reader</ion-button> -->
+  </div>
+</ion-content>

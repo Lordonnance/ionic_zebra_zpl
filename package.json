@@ -37,6 +37,7 @@
     "@ionic/angular": "^6.0.0",
     "call-number": "^1.0.1",
     "capacitor-email-composer": "^1.1.3",
+    "capacitor-zebra-printer": "^0.2.0",
     "cordova-plugin-ionic": "5.5.1",
     "firebase": "^9.4.0",
     "globalthis": "^1.0.3",

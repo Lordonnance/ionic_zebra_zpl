@@ -1,21 +1,27 @@
-ion-content{
+#container {
     text-align: center;
-
-    .img_logo{
-        width: 40%;
-        max-width: 256px;
-        border-radius: 20px;    
-        margin-top: 60px;
-        margin-bottom: 20px;
-    }
-}
-
-/*
-ion-footer{
-    padding: 10px;
-    background-color: white;
-}
-.footer-md:before{
-    height: 0px;
-}
-*/
+  
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+  
+  #container strong {
+    font-size: 20px;
+    line-height: 26px;
+  }
+  
+  #container p {
+    font-size: 16px;
+    line-height: 22px;
+  
+    color: #8c8c8c;
+  
+    margin: 0;
+  }
+  
+  #container a {
+    text-decoration: none;
+  }

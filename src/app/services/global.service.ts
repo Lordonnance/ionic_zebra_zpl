@@ -128,9 +128,9 @@ export class GlobalService {
         const salonDateStart = new Date(newSalon.dateStart.seconds * 1000)
         const salonDateEnd = new Date(newSalon.dateEnd.seconds * 1000)
         const today = new Date()
-        console.log ("salon city", newSalon.city)
-        console.log ("salonDateStart", salonDateStart)
-        console.log ("salonDateEnd", salonDateEnd)
+        // console.log ("salon city", newSalon.city)
+        // console.log ("salonDateStart", salonDateStart)
+        // console.log ("salonDateEnd", salonDateEnd)
         if (today >= salonDateStart && today <= salonDateEnd) {
           this.salonsList.push({
             id: salon.id,
